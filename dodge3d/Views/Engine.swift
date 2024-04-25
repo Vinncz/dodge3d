@@ -25,7 +25,7 @@ import RealityKit
 @Observable class ShootingEngine: Engine {
     
     override func spawnObject ( ) {
-        var anchor = AnchorEntity (
+        let anchor = AnchorEntity (
             world: self.manager!.cameraTransform.translation
         )
         
