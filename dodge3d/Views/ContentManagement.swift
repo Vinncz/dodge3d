@@ -22,7 +22,7 @@ struct ContentManagement: UIViewRepresentable {
     
     func setupEngines ( _ view: ARView ) {
         manages.forEach { engine in
-            engine.setup(_manager: view)
+            engine.setup(manager: view)
         }
     }
     
@@ -48,7 +48,7 @@ struct ContentManagement: UIViewRepresentable {
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */
         func session ( _ session: ARSession, didUpdate frame: ARFrame ) {
             for engine in self.managedEngine {
-                engine.updateObjectPosition(_frame: frame)
+                engine.updateObjectPosition(frame: frame)
             }
         }
         
