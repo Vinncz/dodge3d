@@ -53,11 +53,9 @@ struct ContentManagement: UIViewRepresentable {
         }
         
         @objc func handleTap ( _ gesture: UITapGestureRecognizer ) {
-            if (gesture.state == .began) {
-                self.managedEngine.forEach({ engine in
-                    engine.spawnObject()
-                })
-            }
+            self.managedEngine.forEach({ engine in
+                engine.spawnObject()
+            })
         }
         
         @objc func handleHold ( _ gesture: UILongPressGestureRecognizer ) {

@@ -5,7 +5,7 @@ import RealityKit
 @Observable class Engine {
     var manager: ARView?
     var projectiles: [MovingObject] = []
-    let projectileSpeed:Float = GameConfigs.projectileSpeed
+    var projectileSpeed:Float = GameConfigs.projectileSpeed
     var timer: Timer?
     
     struct MovingObject {
@@ -13,26 +13,62 @@ import RealityKit
         var direction: SIMD3<Float>
     }
     
-    func setup                     ( manager: ARView ) { self.manager = manager }
-    func spawnObject               ( ) {}
-    func despawnObject             ( targetAnchor: AnchorEntity ) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + GameConfigs.despawnDelay) {
-            self.manager!.scene.removeAnchor(targetAnchor)
-            self.projectiles.removeAll { $0.anchor == targetAnchor }
-        }
+    /** Sets up the required ARView to attribute. Without the supplied ARView, nothing will be placed, moved, or visible. -- Think of ARView as a management agency that you signed up for. Without them, you cannot perform onto stage. */
+    func setup ( manager: ARView ) { 
+        self.manager = manager
     }
-    func updateObjectPosition      ( frame  : ARFrame ) {}
-    func calculateObjectTrajectory ( ) -> SIMD3<Float> {
-        return SIMD3<Float>(x: 0, y: 0, z: 0) 
-    }
-    func createObject              ( ) -> ModelEntity {
+    
+    /** The method which creates an object, which then will need to be placed somewhere  */
+    func createObject ( ) -> ModelEntity {
         let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
         object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
         
         return object
     }
-    func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) {}
+    
+    /** The method which places an object onto canvas, making it visible */
+    func spawnObject ( ) {}
+    
+    /** The method which makes an object disappear, and then deletes it */
+    func despawnObject ( targetAnchor: AnchorEntity ) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + GameConfigs.despawnDelay) {
+            self.manager!.scene.removeAnchor(targetAnchor)
+            self.projectiles.removeAll { $0.anchor == targetAnchor }
+        }
+    }
+    
+    /** The method which moves an object to somewhere */
+    func updateObjectPosition ( frame : ARFrame ) {}
+    
+    /** The method which calculates where the object is going to be, influenced by its speed and its direction vector */
+    func calculateObjectTrajectory ( ) -> SIMD3<Float> {
+        return SIMD3<Float>(x: 0, y: 0, z: 0) 
+    }
+    
+    /** The method which determines whether an object has collided with another object. CANNOT BE USED TO TRACK COLLISION BETWEEN OBJECT AND CAMERA */
+    func detectCollision ( of objectA: Entity, to objectB: Entity ) -> Bool {
+        
+        /* When either object isn't visible, they can't possibly collide */
+        guard let anchorA = objectA.anchor, let anchorB = objectB.anchor else {
+            return false
+        }
+        
+        let distance = length(anchorB.transform.translation - anchorA.transform.translation)
+        print("distance: \(distance)")
+        let treshold = GameConfigs.defaultCollisionRadius
+        
+        if ( distance <= treshold ) { print("they collided!") }
+        
+        return distance <= treshold
+    }
+    
+    /** The method which determines whether an object has collided with the camera */
+    func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) -> Bool { 
+        return false
+    }
+    
+    /** The method which dictates what happens when an object colided with the camera */
     func handleCollisionWithCamera ( objectResponsible: MovingObject ) {}
 }
 
@@ -97,6 +133,8 @@ import RealityKit
 }
 
 @Observable class HomingEngine: Engine {
+    var counter: Int = 0
+    
     override func spawnObject ( ) {
         var anchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
         if let cameraTransform = self.manager!.session.currentFrame?.camera.transform {
@@ -152,18 +190,29 @@ import RealityKit
             )
             
             let distanceFromCamera = length(cameraPosition - projectedPosition)
-            detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera)
+            
+            /* somehow, posisi projectile-nya stale, sehingga dia hanya ngukur posisi projectile sekarang ke posisi lamanya */
+//            if ( detectCollision(of: AnchorEntity(world: cameraPosition), to: projectile.anchor) ) {
+//                handleCollisionWithCamera(objectResponsible: projectile)   
+//            }
+            
+            if ( detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera) ) {
+                handleCollisionWithCamera(objectResponsible: projectile)
+            }
         }
     }
     
-    override func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) {
-        if ( distanceFromCamera < GameConfigs.defaultSphereRadius ) {
-            handleCollisionWithCamera(objectResponsible: object)
-        }
+    override func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) -> Bool {
+        print("distance: \(distanceFromCamera)")
+        let treshold = GameConfigs.defaultCollisionRadius
+        
+        if ( distanceFromCamera <= treshold ) { print("they collided!") }
+        return distanceFromCamera < GameConfigs.defaultSphereRadius ? true : false
     }
     
     override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
-        print("kena kamera nih!")
+        print("kena kamera nih! \(counter)")
+        counter += 1
     }
 }
 

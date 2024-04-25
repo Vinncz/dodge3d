@@ -4,8 +4,8 @@ struct GameConfigs {
     
     /** The time taken between rendering projectile to the screen  */
     static let summonDelay: TimeInterval = 0.2
-    static let despawnDelay: Double = 2.5
-    static let projectileSpeed: Float = 0.05
+    static let despawnDelay: Double = 15
+    static let projectileSpeed: Float = 0.01
     static let projectileRandomnessMultiplier: Float = 0.01
     static let projectileRandomnessSpecifier: Float = Float.pi / 8
     
@@ -16,5 +16,7 @@ struct GameConfigs {
     static let projectileScreenOffsetX: Float = 0
     static let projectileScreenOffsetY: Float = 0.125
     static let projectileScreenOffsetZ: Float = 0.05
+    
+    static let defaultCollisionRadius: Float = 0.05
     
 }
