@@ -13,7 +13,8 @@ struct GameConfigs {
     
     static let defaultSphereRadius: Float = 0.05
     
-    static let projectileScreenOffsetY: Float = 0
-    static let projectileScreenOffsetZ: Float = 0
+    static let projectileScreenOffsetX: Float = 0
+    static let projectileScreenOffsetY: Float = 0.125
+    static let projectileScreenOffsetZ: Float = 0.05
     
 }

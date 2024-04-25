@@ -23,22 +23,37 @@ import RealityKit
     }
     func updateObjectPosition      ( frame  : ARFrame ) {}
     func calculateObjectTrajectory ( ) -> SIMD3<Float> {
-        return SIMD3<Float>(x: 0, y: 0, z: 0) }
-    func createObject              ( ) -> ModelEntity {
-        return ModelEntity(mesh: .generateSphere(radius: 0.05), materials: [SimpleMaterial(color: .red, isMetallic: true)])
+        return SIMD3<Float>(x: 0, y: 0, z: 0) 
     }
+    func createObject              ( ) -> ModelEntity {
+        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
+        object.generateCollisionShapes(recursive: true)
+        object.physicsBody?.mode = .dynamic
+        
+        return object
+    }
+    func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) {}
     func handleCollisionWithCamera ( objectResponsible: MovingObject ) {}
 }
 
 @Observable class ShootingEngine: Engine {
+    
+    override func createObject ( ) -> ModelEntity {
+        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius - 0.025), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
+        object.generateCollisionShapes(recursive: true)
+        object.physicsBody?.mode = .dynamic
+        
+        return object
+    }
     
     override func spawnObject ( ) {
         let anchor = AnchorEntity (
             world: self.manager!.cameraTransform.translation
         )
         
-        anchor.position.y -= GameConfigs.projectileScreenOffsetY
-        anchor.position.z -= GameConfigs.projectileScreenOffsetZ
+        anchor.position.x = self.manager!.cameraTransform.translation.x + GameConfigs.projectileScreenOffsetX
+        anchor.position.y = self.manager!.cameraTransform.translation.y + GameConfigs.projectileScreenOffsetY
+        anchor.position.z = self.manager!.cameraTransform.translation.z + GameConfigs.projectileScreenOffsetZ
         
         anchor.addChild(createObject())
         self.manager!.scene.addAnchor(anchor)
@@ -76,32 +91,9 @@ import RealityKit
             let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
             
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
-            
-            // transform is a 4x4 matrix that contains
-            // 1. where the camera is
-            // 2. where its looking at
-            // 3. any tilt?
-            let cameraTransform = frame.camera.transform
-            let cameraPosition  = SIMD3<Float> (
-                cameraTransform.columns.3.x,
-                cameraTransform.columns.3.y,
-                cameraTransform.columns.3.z
-            )
-            
-            let distanceFromCamera = length(cameraPosition - projectedPosition)
-            //detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera)
         }
     }
-    
-//    func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) {
-//        if ( distanceFromCamera < GameConfigs.defaultSphereRadius ) {
-//            handleCollisionWithCamera(objectResponsible: object)
-//        }
-//    }
-    
-    override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
-        print("kena kamera nih!")
-    }
+
 }
 
 @Observable class HomingEngine: Engine {
@@ -151,11 +143,7 @@ import RealityKit
             let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
             
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
-            
-            // transform is a 4x4 matrix that contains
-            // 1. where the camera is
-            // 2. where its looking at
-            // 3. any tilt?
+
             let cameraTransform = frame.camera.transform
             let cameraPosition  = SIMD3<Float> (
                 cameraTransform.columns.3.x,
@@ -168,7 +156,7 @@ import RealityKit
         }
     }
     
-    func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) {
+    override func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) {
         if ( distanceFromCamera < GameConfigs.defaultSphereRadius ) {
             handleCollisionWithCamera(objectResponsible: object)
         }

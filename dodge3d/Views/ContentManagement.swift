@@ -53,15 +53,19 @@ struct ContentManagement: UIViewRepresentable {
         }
         
         @objc func handleTap ( _ gesture: UITapGestureRecognizer ) {
-            if(gesture.state == .began){
-                self.managedEngine[0].spawnObject()
+            if (gesture.state == .began) {
+                self.managedEngine.forEach({ engine in
+                    engine.spawnObject()
+                })
             }
         }
         
         @objc func handleHold ( _ gesture: UILongPressGestureRecognizer ) {
             if ( gesture.state == .began ) {
                 holdTimer = Timer.scheduledTimer(withTimeInterval: GameConfigs.summonDelay, repeats: true) { [self] _ in
-                    self.managedEngine[0].spawnObject()
+                    self.managedEngine.forEach({ engine in
+                        engine.spawnObject()
+                    })
                 }
                 
             } else if ( gesture.state == .ended || gesture.state == .cancelled ) {
