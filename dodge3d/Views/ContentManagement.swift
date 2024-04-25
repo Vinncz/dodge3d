@@ -3,7 +3,7 @@ import ARKit
 import RealityKit
 
 struct ContentManagement: UIViewRepresentable {
-    @Binding var manages: [Engine]
+    var manages: [Engine]
     
     /* Inherited from protocol UIViewRepresentable. Refrain from renaming the following */
     func makeUIView ( context: Context ) -> some UIView {
