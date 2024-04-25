@@ -61,7 +61,9 @@ struct ContentManagement: UIViewRepresentable {
         }
         
         @objc func handleTap ( _ gesture: UITapGestureRecognizer ) {
-            print("layar kena tap!")
+            if(gesture.state == .began){
+                self.managedEngine[0].spawnObject()
+            }
         }
         
         @objc func handleHold ( _ gesture: UILongPressGestureRecognizer ) {
