@@ -17,6 +17,8 @@
 		20E1C1172BD7BDE400F514E6 /* dodge3dTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1162BD7BDE400F514E6 /* dodge3dTests.swift */; };
 		20E1C1212BD7BDE400F514E6 /* dodge3dUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1202BD7BDE400F514E6 /* dodge3dUITests.swift */; };
 		20E1C1232BD7BDE400F514E6 /* dodge3dUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1222BD7BDE400F514E6 /* dodge3dUITestsLaunchTests.swift */; };
+		DC8DD49C2BDA4A0F00097192 /* ContentManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD49B2BDA4A0F00097192 /* ContentManagement.swift */; };
+		DC8DD49E2BDA4A5800097192 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8DD49D2BDA4A5800097192 /* Engine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +69,8 @@
 		20E1C1332BD7C33B00F514E6 /* fxkxkjyxkixky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fxkxkjyxkixky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20E1C1422BD7C33D00F514E6 /* fxkxkjyxkixkyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fxkxkjyxkixkyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20E1C14C2BD7C33D00F514E6 /* fxkxkjyxkixkyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fxkxkjyxkixkyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC8DD49B2BDA4A0F00097192 /* ContentManagement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentManagement.swift; sourceTree = "<group>"; };
+		DC8DD49D2BDA4A5800097192 /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +131,8 @@
 			isa = PBXGroup;
 			children = (
 				20B76C4D2BD9771600D2A31E /* Canvas.swift */,
+				DC8DD49B2BDA4A0F00097192 /* ContentManagement.swift */,
+				DC8DD49D2BDA4A5800097192 /* Engine.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -411,11 +417,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC8DD49C2BDA4A0F00097192 /* ContentManagement.swift in Sources */,
 				20E1C1082BD7BDE200F514E6 /* ContentView.swift in Sources */,
 				20B76C482BD8E99C00D2A31E /* asd.swift in Sources */,
 				20E1C1062BD7BDE200F514E6 /* AppDelegate.swift in Sources */,
 				20B76C4E2BD9771600D2A31E /* Canvas.swift in Sources */,
 				20B76C4B2BD96BFD00D2A31E /* GameConfigs.swift in Sources */,
+				DC8DD49E2BDA4A5800097192 /* Engine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,6 +628,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -651,6 +660,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
