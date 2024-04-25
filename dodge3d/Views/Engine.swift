@@ -1,10 +1,3 @@
-//
-//  Engine.swift
-//  dodge3d
-//
-//  Created by Jonathan Aaron Wibawa on 25/04/24.
-//
-
 import SwiftUI
 import ARKit
 import RealityKit
@@ -36,8 +29,8 @@ import RealityKit
             world: self.manager!.cameraTransform.translation
         )
         
-        anchor.position.y -= 0.1
-        anchor.position.z -= 0.5
+        anchor.position.y -= GameConfigs.projectileScreenOffsetY
+        anchor.position.z -= GameConfigs.projectileScreenOffsetZ
         
         anchor.addChild(createObject())
         self.manager!.scene.addAnchor(anchor)
@@ -67,8 +60,8 @@ import RealityKit
         // multiply by -1 to direct the projectile to the front of the camera
         var direction = cameraForwardDirection * -1
 
-        let angle = Float.random(in: -Float.pi/8...Float.pi/8)
-        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * 0.01
+        let angle = Float.random(in: -GameConfigs.projectileRandomnessSpecifier...GameConfigs.projectileRandomnessSpecifier)
+        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * GameConfigs.projectileRandomnessMultiplier
         direction += offset
         
         return direction

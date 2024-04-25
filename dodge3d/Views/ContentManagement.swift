@@ -1,10 +1,3 @@
-//
-//  ContentManagement.swift
-//  dodge3d
-//
-//  Created by Jonathan Aaron Wibawa on 25/04/24.
-//
-
 import SwiftUI
 import ARKit
 import RealityKit
@@ -15,6 +8,7 @@ struct ContentManagement: UIViewRepresentable {
     /* Inherited from protocol UIViewRepresentable. Refrain from renaming the following */
     func makeUIView ( context: Context ) -> some UIView {
         let arView = ARView()
+        arView.session.delegate = context.coordinator
         
         exertConfigs(arView, ARWorldTrackingConfiguration())
         
@@ -22,8 +16,6 @@ struct ContentManagement: UIViewRepresentable {
         attachHoldGestureRecognizer(context, arView)
         
         setupEngines(arView)
-        
-        arView.session.delegate = context.coordinator
         
         return arView
     }
@@ -56,7 +48,7 @@ struct ContentManagement: UIViewRepresentable {
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */
         func session ( _ session: ARSession, didUpdate frame: ARFrame ) {
             for engine in self.managedEngine {
-                (engine as! ShootingEngine).updateObjectPosition(_frame: frame)
+                engine.updateObjectPosition(_frame: frame)
             }
         }
         
