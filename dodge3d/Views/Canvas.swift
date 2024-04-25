@@ -68,8 +68,6 @@ struct ContentManagement: UIViewRepresentable {
         
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */
         func session ( _ session: ARSession, didUpdate frame: ARFrame ) {
-            print("masuk session!")
-            
             for engine in self.managedEngine {
                 (engine as! ShootingEngine).updateObjectPosition(_frame: frame)
             }
@@ -135,14 +133,13 @@ struct ContentManagement: UIViewRepresentable {
 @Observable class ShootingEngine: Engine {
     
     override func spawnObject ( ) {
-        // anchor bisa dimengerti sebagai 
-        // 'lokasi yang lu tunjuk, yang nantinya bakal ditempatin suatu object'
-        let anchor = AnchorEntity (
+        var anchor = AnchorEntity (
             world: self.manager!.cameraTransform.translation
         )
         
-        // semua object memerlukan anchor agar bisa tampil
-        // likewise, semua anchor memerlukan scene agar bisa tampil
+        anchor.position.y -= 0.1
+        anchor.position.z -= 0.5
+        
         anchor.addChild(createObject())
         self.manager!.scene.addAnchor(anchor)
         
@@ -158,7 +155,7 @@ struct ContentManagement: UIViewRepresentable {
     }
     
     override func despawnObject ( targetAnchor: AnchorEntity ) {
-        DispatchQueue.main.asyncAfter(deadline: GameConfigs.despawnDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + GameConfigs.despawnDelay) {
             self.manager!.scene.removeAnchor(targetAnchor)
             self.projectiles.removeAll { $0.anchor == targetAnchor }
         }
@@ -167,11 +164,13 @@ struct ContentManagement: UIViewRepresentable {
     override func calculateObjectTrajectory () -> SIMD3<Float> {
         let cameraTransform = self.manager!.cameraTransform
         let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x, y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
-        var direction = cameraForwardDirection
+        
+        // multiply by -1 to direct the projectile to the front of the camera
+        var direction = cameraForwardDirection * -1
 
         let angle = Float.random(in: -Float.pi/8...Float.pi/8)
         let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * 0.01
-        direction -= offset
+        direction += offset
         
         return direction
     }
