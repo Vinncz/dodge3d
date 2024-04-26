@@ -126,7 +126,7 @@ class ARViewModel: ObservableObject {
             anchor = AnchorEntity(world: arView.cameraTransform.translation)
             if let cameraTransform = arView.session.currentFrame?.camera.transform {
                 var translation = matrix_identity_float4x4
-                translation.columns.3.z = GameConfigs.spawnDistance  // The object will appear 2 meters in the direction the camera is facing
+                translation.columns.3.z = GameConfigs.homingSpawnDistance  // The object will appear 2 meters in the direction the camera is facing
                 let modifiedTransform = simd_mul(cameraTransform, translation)
                 let position = SIMD3<Float>(modifiedTransform.columns.3.x, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
                 anchor = AnchorEntity(world: position)
