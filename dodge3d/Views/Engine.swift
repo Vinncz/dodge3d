@@ -180,16 +180,12 @@ import RealityKit
     }
     
     override func spawnObject ( ) {
-        let cameraAnchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
         var anchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
-//        var anchor = AnchorEntity(world: [0, 0, -5])
-        
         if let cameraTransform = self.manager!.session.currentFrame?.camera.transform {
             var translation = matrix_identity_float4x4
-            translation.columns.3.y = offset
-            translation.columns.3.z = GameConfigs.homingSpawnDistance  // The object will appear 2 meters in the direction the camera is facing
+            translation.columns.3.z = GameConfigs.spawnDistance  // The object will appear 2 meters in the direction the camera is facing
             let modifiedTransform = simd_mul(cameraTransform, translation)
-            let position = SIMD3<Float>(modifiedTransform.columns.3.x, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
+            let position = SIMD3<Float>(modifiedTransform.columns.3.x + offset, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
             anchor = AnchorEntity(world: position)
         }
         
@@ -207,28 +203,16 @@ import RealityKit
         despawnObject(targetAnchor: anchor)
     }
     
-    override func calculateObjectTrajectory ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {
-        let objectTransform = from.transform
-        let cameraTransform = to.transform
-        
-        var translation = matrix_identity_float4x4
-        let modifiedTransform = simd_mul(cameraTransform.matrix, translation)
-        
-        let cameraDirection = SIMD3<Float> (
-            x: modifiedTransform.columns.2.x,
-            y: modifiedTransform.columns.2.y,
-            z: modifiedTransform.columns.2.z
-        )
-        
+    override func calculateObjectTrajectory () -> SIMD3<Float> {
+        let cameraTransform = self.manager!.cameraTransform
         let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x - (self.offset / 2), y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
         
         // multiply by -1 to direct the projectile to the front of the camera
         var direction = cameraForwardDirection
-//        var direction = normalize(cameraDirection - objectTransform.translation)
         
-//        let angle = Float.random(in: -GameConfigs.projectileRandomnessSpecifier...GameConfigs.projectileRandomnessSpecifier)
-//        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * GameConfigs.projectileRandomnessMultiplier
-//        direction += offset
+        let angle = Float.random(in: -GameConfigs.projectileRandomnessSpecifier...GameConfigs.projectileRandomnessSpecifier)
+        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * GameConfigs.projectileRandomnessMultiplier
+        direction += offset
         
         return direction
     }
@@ -281,3 +265,47 @@ import RealityKit
     }
 }
 
+@Observable class TargetEngine: Engine {
+    var instanceCount = 0
+    
+    private func randomPositionInFrontOfCamera() -> SIMD3<Float> {
+        let cameraTransform = self.manager!.cameraTransform
+        let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x, y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
+        
+        let randomDistance = Float.random(in: 1.0...4.0) // Jarak acak dari kamera
+        let randomAngle = Float.random(in: -Float.pi...Float.pi) // Sudut acak
+        
+        let randomOffset = SIMD3<Float>(cos(randomAngle), 0, sin(randomAngle)) * randomDistance
+        let randomPosition = cameraTransform.translation + randomOffset
+        
+        return randomPosition
+    }
+    
+    func createBoxObject() -> ModelEntity {
+        let boxSize = Float.random(in: 0.1...0.5) // Ukuran acak untuk kotak
+        let object = ModelEntity(mesh: .generateBox(size: SIMD3<Float>(repeating: boxSize)), materials: [SimpleMaterial(color: .magenta, isMetallic: true)])
+        object.generateCollisionShapes(recursive: true)
+        object.physicsBody?.mode = .dynamic
+        
+        return object
+    }
+    
+    override func spawnObject() {
+        if ( self.instanceCount <= GameConfigs.maxTargetCount ) {
+            let anchor = AnchorEntity(world: randomPositionInFrontOfCamera())
+            anchor.addChild(createBoxObject())
+            self.manager!.scene.addAnchor(anchor)
+            
+            self.instanceCount += 1
+        }
+    }
+    
+    override func setup ( manager: ARView ) {
+        self.manager = manager
+        self.spawnObject()
+        self.spawnObject()
+        self.spawnObject()
+        self.spawnObject()
+        self.spawnObject()
+    }
+}

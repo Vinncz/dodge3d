@@ -6,7 +6,8 @@ struct Canvas: View {
     var engines: [Engine] = [
         ShootingEngine(),
         HomingEngine(0.2),
-        HomingEngine(-0.2)
+        HomingEngine(-0.2),
+        TargetEngine()
     ]
     
     var body: some View {
