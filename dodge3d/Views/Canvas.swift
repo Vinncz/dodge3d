@@ -5,7 +5,8 @@ import RealityKit
 struct Canvas: View {
     var engines: [Engine] = [
         ShootingEngine(),
-        HomingEngine()
+        HomingEngine(0.2),
+        HomingEngine(-0.2)
     ]
     
     var body: some View {

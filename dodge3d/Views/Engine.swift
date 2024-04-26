@@ -136,6 +136,11 @@ import RealityKit
 
 @Observable class HomingEngine: Engine {
     var counter: Int = 0
+    var offset : Float
+    
+    init(_ offset: Float = 0) {
+        self.offset = offset
+    }
     
     override func spawnObject ( ) {
         var anchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
@@ -143,7 +148,7 @@ import RealityKit
             var translation = matrix_identity_float4x4
             translation.columns.3.z = GameConfigs.spawnDistance  // The object will appear 2 meters in the direction the camera is facing
             let modifiedTransform = simd_mul(cameraTransform, translation)
-            let position = SIMD3<Float>(modifiedTransform.columns.3.x, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
+            let position = SIMD3<Float>(modifiedTransform.columns.3.x + offset, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
             anchor = AnchorEntity(world: position)
         }
         
