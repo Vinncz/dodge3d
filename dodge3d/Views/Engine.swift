@@ -168,7 +168,7 @@ import RealityKit
     
     override func calculateObjectTrajectory () -> SIMD3<Float> {
         let cameraTransform = self.manager!.cameraTransform
-        let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x, y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
+        let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x - (self.offset / 2), y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
         
         // multiply by -1 to direct the projectile to the front of the camera
         var direction = cameraForwardDirection
@@ -228,3 +228,47 @@ import RealityKit
     }
 }
 
+@Observable class TargetEngine: Engine {
+    var instanceCount = 0
+    
+    private func randomPositionInFrontOfCamera() -> SIMD3<Float> {
+        let cameraTransform = self.manager!.cameraTransform
+        let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x, y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
+        
+        let randomDistance = Float.random(in: 1.0...4.0) // Jarak acak dari kamera
+        let randomAngle = Float.random(in: -Float.pi...Float.pi) // Sudut acak
+        
+        let randomOffset = SIMD3<Float>(cos(randomAngle), 0, sin(randomAngle)) * randomDistance
+        let randomPosition = cameraTransform.translation + randomOffset
+        
+        return randomPosition
+    }
+    
+    func createBoxObject() -> ModelEntity {
+        let boxSize = Float.random(in: 0.1...0.5) // Ukuran acak untuk kotak
+        let object = ModelEntity(mesh: .generateBox(size: SIMD3<Float>(repeating: boxSize)), materials: [SimpleMaterial(color: .magenta, isMetallic: true)])
+        object.generateCollisionShapes(recursive: true)
+        object.physicsBody?.mode = .dynamic
+        
+        return object
+    }
+    
+    override func spawnObject() {
+        if ( self.instanceCount <= GameConfigs.maxTargetCount ) {
+            let anchor = AnchorEntity(world: randomPositionInFrontOfCamera())
+            anchor.addChild(createBoxObject())
+            self.manager!.scene.addAnchor(anchor)
+            
+            self.instanceCount += 1
+        }
+    }
+    
+    override func setup ( manager: ARView ) {
+        self.manager = manager
+        self.spawnObject()
+        self.spawnObject()
+        self.spawnObject()
+        self.spawnObject()
+        self.spawnObject()
+    }
+}

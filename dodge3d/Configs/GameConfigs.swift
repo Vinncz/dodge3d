@@ -22,4 +22,6 @@ struct GameConfigs {
     
     static let defaultCollisionRadius: Float = 0.05
     
+    static let maxTargetCount: Int = 5
+    
 }
