@@ -70,6 +70,8 @@ import RealityKit
     
     /** The method which dictates what happens when an object colided with the camera */
     func handleCollisionWithCamera ( objectResponsible: MovingObject ) {}
+    
+    func handleDebug ( message: Any ) {}
 }
 
 @Observable class ShootingEngine: Engine {
@@ -203,16 +205,21 @@ import RealityKit
     }
     
     override func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) -> Bool {
-        print("distance: \(distanceFromCamera)")
+        handleDebug(message: "distance: \(distanceFromCamera)")
         let treshold = GameConfigs.defaultCollisionRadius
         
-        if ( distanceFromCamera <= treshold ) { print("they collided!") }
+        if ( distanceFromCamera <= treshold ) { handleDebug(message: "they collided!") }
         return distanceFromCamera < GameConfigs.defaultSphereRadius ? true : false
     }
     
     override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
-        print("kena kamera nih! \(counter)")
         counter += 1
+    }
+    
+    override func handleDebug(message: Any) {
+        if ( GameConfigs.debug ) {
+            print(message)
+        }
     }
 }
 
