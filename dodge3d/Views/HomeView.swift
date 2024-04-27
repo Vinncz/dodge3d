@@ -64,10 +64,10 @@ struct Title: View {
         VStack {
             Text(title1)
                 .foregroundColor(color1)
-                .shadow(color: color1, radius: 10)
+                .shadow(color: color1, radius: 15)
             Text(title2)
                 .foregroundColor(color2)
-                .shadow(color: color2, radius: /*@START_MENU_TOKEN@*/10/*@END_MENU_TOKEN@*/)
+                .shadow(color: color2, radius: 15)
         }
         .font(.system(size: 40))
         .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
