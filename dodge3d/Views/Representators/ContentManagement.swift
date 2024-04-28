@@ -26,6 +26,12 @@ struct ContentManagement: UIViewRepresentable {
     func setupEngines ( _ view: ARView ) {
         manages.forEach { engine in
             engine.setup(manager: view)
+            
+            if ( engine is HomingEngine ) {
+                Timer.scheduledTimer(withTimeInterval: GameConfigs.summonDelay, repeats: true) {_ in 
+                    engine.spawnObject()
+                }
+            }
         }
     }
     
@@ -69,8 +75,13 @@ struct ContentManagement: UIViewRepresentable {
 //                        what to do when engine is an instance of ShootingEngine
                         break
                         
-                    case is LegacyHomingEngine:
+                    case is HomingEngine:
 //                        let e = engine as! HomingEngine
+//                        what to do when engine is an instace of HomingEngine
+                        break
+                        
+                    case is LegacyHomingEngine:
+//                        let e = engine as! LegacyHomingEngine
 //                        what to do when engine is an instace of HomingEngine
                         break
                         
@@ -95,8 +106,13 @@ struct ContentManagement: UIViewRepresentable {
 //                        what to do when engine is an instance of ShootingEngine
                         break
                         
-                    case is LegacyHomingEngine:
+                    case is HomingEngine:
 //                        let e = engine as! HomingEngine
+//                        what to do when engine is an instace of HomingEngine
+                        break
+                        
+                    case is LegacyHomingEngine:
+//                        let e = engine as! LegacyHomingEngine
 //                        what to do when engine is an instace of HomingEngine
                         break
                         
@@ -123,8 +139,13 @@ struct ContentManagement: UIViewRepresentable {
 //                                what to do when engine is an instance of ShootingEngine
                                 break
                                 
-                            case is LegacyHomingEngine:
+                            case is HomingEngine:
 //                                let e = engine as! HomingEngine
+//                                what to do when engine is an instace of HomingEngine
+                                break
+                                
+                            case is LegacyHomingEngine:
+//                                let e = engine as! LegacyHomingEngine
 //                                what to do when engine is an instace of HomingEngine
                                 break
                                 

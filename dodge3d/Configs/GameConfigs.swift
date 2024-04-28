@@ -16,8 +16,10 @@ struct GameConfigs {
     static let despawnDelay: Double = 3
     static let projectileSpeed: Float = 0.05
     
+    static let hostileProjectileSpeed: Float = 0.1
+    
     static let friendlyProjectileInaccuracy: ClosedRange<Float> = 96...128 // the least accurate being 1 ÷ 96 and the most accurate being 1 ÷ 128
-    static let hostileProjectileInaccuracy : ClosedRange<Float> = 96...128 
+    static let hostileProjectileInaccuracy : ClosedRange<Float> = 72...96
     
     static let shootingSpawnDistance: Float = -0.5
     static let homingSpawnDistance: Float = -2.5
