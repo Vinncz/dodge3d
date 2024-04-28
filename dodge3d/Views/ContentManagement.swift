@@ -1,6 +1,7 @@
 import SwiftUI
 import ARKit
 import RealityKit
+import Combine
 
 struct ContentManagement: UIViewRepresentable {
     var manages: [Engine]
@@ -16,6 +17,8 @@ struct ContentManagement: UIViewRepresentable {
         attachHoldGestureRecognizer(context, arView)
         
         setupEngines(arView)
+        
+        context.coordinator.setupCollisions()
         
         return arView
     }
@@ -40,9 +43,21 @@ struct ContentManagement: UIViewRepresentable {
     class Coordinator: NSObject, ARSessionDelegate {
         var managedEngine: [Engine]
         var holdTimer: Timer?
+        var collisionSubscriptions = [Cancellable]()
         
         init ( _managedEngine: [Engine] ) {
             self.managedEngine = _managedEngine
+        }
+        
+        func setupCollisions(){
+            self.managedEngine.forEach({engine in
+                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Began.self){ event in
+                    print("BEGIN")
+                })!)
+                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Ended.self){ event in
+                    print("ENDED")
+                })!)
+            })
         }
         
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */

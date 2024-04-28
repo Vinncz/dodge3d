@@ -30,8 +30,8 @@ import Observation
     /** The method which creates an object, which then will need to be placed somewhere  */
     func createObject ( ) -> ModelEntity {
         let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
-        object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
+        object.generateCollisionShapes(recursive: true)
         
         return object
     }
@@ -81,7 +81,26 @@ import Observation
     func handleCollisionWithCamera ( objectResponsible: MovingObject ) {}
     
     func handleDebug ( message: Any ) {}
+    
+//    func loadUSDZ(named name: String) -> ModelEntity? {
+//        let url = Bundle.main.url(forResource: name, withExtension: "usdz")
+//        guard let url = url else {
+//            debugPrint("Error: Unable to find USDZ asset \(name)")
+//            return nil
+//        }
+//        return ModelEntity(url: url)
+//    }
+//
+//    func createObject() -> ModelEntity? {
+//        guard let entity = loadUSDZ(named: "Plasma") else {
+//            return nil
+//        }
+//        entity.generateCollisionShapes(recursive: true)
+//        entity.physicsBody?.mode = .dynamic
+//        return entity
+//    }
 }
+
 
 @Observable class ShootingEngine: Engine {
     
@@ -246,6 +265,44 @@ import Observation
         return direction
     }
     
+//    override func spawnObject ( ) {
+//        var anchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
+//        if let cameraTransform = self.manager!.session.currentFrame?.camera.transform {
+//            var translation = matrix_identity_float4x4
+//            translation.columns.3.z = GameConfigs.spawnDistance  // The object will appear 2 meters in the direction the camera is facing
+//            let modifiedTransform = simd_mul(cameraTransform, translation)
+//            let position = SIMD3<Float>(modifiedTransform.columns.3.x + offset, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
+//            anchor = AnchorEntity(world: position)
+//        }
+//        
+//        anchor.addChild(createObject())
+//        self.manager!.scene.addAnchor(anchor)
+//        
+//        let trajectory = calculateObjectTrajectory(from: anchor, to: cameraAnchor)
+//        projectiles.append (
+//            MovingObject (
+//                anchor: anchor,
+//                direction: trajectory
+//            )
+//        )
+//        
+//        despawnObject(targetAnchor: anchor)
+//    }
+//    
+//    override func calculateObjectTrajectory () -> SIMD3<Float> {
+//        let cameraTransform = self.manager!.cameraTransform
+//        let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x - (self.offset / 2), y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
+//        
+//        // multiply by -1 to direct the projectile to the front of the camera
+//        var direction = cameraForwardDirection
+//        
+//        let angle = Float.random(in: -GameConfigs.projectileRandomnessSpecifier...GameConfigs.projectileRandomnessSpecifier)
+//        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * GameConfigs.projectileRandomnessMultiplier
+//        direction += offset
+//        
+//        return direction
+//    }
+    
     override func updateObjectPosition ( frame: ARFrame ) {
         for projectile in projectiles {
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
@@ -310,10 +367,15 @@ import Observation
     }
     
     func createBoxObject() -> ModelEntity {
-        let boxSize = Float.random(in: 0.1...0.5) // Ukuran acak untuk kotak
+        let randomSize = Float.random(in: 0.1...0.5) // Ukuran acak untuk target box
+        let boxSize = randomSize
         let object = ModelEntity(mesh: .generateBox(size: SIMD3<Float>(repeating: boxSize)), materials: [SimpleMaterial(color: .magenta, isMetallic: true)])
+        
         object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
+        
+        //adding collision
+        object.collision = CollisionComponent(shapes: [.generateBox(size: [randomSize, randomSize, randomSize])], mode: .default, filter: .default)
         
         return object
     }
