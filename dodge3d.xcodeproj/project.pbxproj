@@ -10,6 +10,7 @@
 		20B76C482BD8E99C00D2A31E /* asd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C472BD8E99C00D2A31E /* asd.swift */; };
 		20B76C4B2BD96BFD00D2A31E /* GameConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C4A2BD96BFD00D2A31E /* GameConfigs.swift */; };
 		20B76C4E2BD9771600D2A31E /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C4D2BD9771600D2A31E /* Canvas.swift */; };
+		20B76C532BDD115000D2A31E /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C522BDD115000D2A31E /* ARView.swift */; };
 		20E1C1062BD7BDE200F514E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1052BD7BDE200F514E6 /* AppDelegate.swift */; };
 		20E1C1082BD7BDE200F514E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1072BD7BDE200F514E6 /* ContentView.swift */; };
 		20E1C10A2BD7BDE300F514E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20E1C1092BD7BDE300F514E6 /* Assets.xcassets */; };
@@ -56,6 +57,7 @@
 		20B76C472BD8E99C00D2A31E /* asd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = asd.swift; sourceTree = "<group>"; };
 		20B76C4A2BD96BFD00D2A31E /* GameConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConfigs.swift; sourceTree = "<group>"; };
 		20B76C4D2BD9771600D2A31E /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
+		20B76C522BDD115000D2A31E /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
 		20E1C1022BD7BDE200F514E6 /* dodge3d.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dodge3d.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20E1C1052BD7BDE200F514E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		20E1C1072BD7BDE200F514E6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -137,6 +139,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		20B76C512BDD114100D2A31E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				20B76C522BDD115000D2A31E /* ARView.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		20E1C0F92BD7BDE200F514E6 = {
 			isa = PBXGroup;
 			children = (
@@ -163,6 +173,7 @@
 		20E1C1042BD7BDE200F514E6 /* dodge3d */ = {
 			isa = PBXGroup;
 			children = (
+				20B76C512BDD114100D2A31E /* Extensions */,
 				20B76C4C2BD9769600D2A31E /* Views */,
 				20B76C492BD96BE500D2A31E /* Configs */,
 				20E1C1052BD7BDE200F514E6 /* AppDelegate.swift */,
@@ -422,6 +433,7 @@
 				20B76C482BD8E99C00D2A31E /* asd.swift in Sources */,
 				20E1C1062BD7BDE200F514E6 /* AppDelegate.swift in Sources */,
 				20B76C4E2BD9771600D2A31E /* Canvas.swift in Sources */,
+				20B76C532BDD115000D2A31E /* ARView.swift in Sources */,
 				20B76C4B2BD96BFD00D2A31E /* GameConfigs.swift in Sources */,
 				DC8DD49E2BDA4A5800097192 /* Engine.swift in Sources */,
 			);

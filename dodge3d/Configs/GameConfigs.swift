@@ -15,7 +15,7 @@ struct GameConfigs {
     static let despawnDelay: Double = 3
     static let projectileSpeed: Float = 0.05
     
-    static let friendlyProjectileInaccuracy: ClosedRange<Float> = 96...128 
+    static let friendlyProjectileInaccuracy: ClosedRange<Float> = 96...128 // the least accurate being 1 ÷ 96 and the most accurate being 1 ÷ 128
     static let hostileProjectileInaccuracy : ClosedRange<Float> = 96...128 
     
     static let shootingSpawnDistance: Float = -0.5
@@ -23,9 +23,14 @@ struct GameConfigs {
     
     static let defaultSphereRadius: Float = 0.05
     
-    static let friendlyProjectileScreenOffsetX: Float = 6 // in degrees
-    static let friendlyProjectileScreenOffsetY: Float = 0.125 // in meters
-    static let friendlyProjectileScreenOffsetZ: Float = 0 // in degrees
+    static let projectileGravityInitialStrength: Float = 0.0025
+    static let projectileGravityParabolicMultiplier: Float = 0.01
+    
+    
+    static let friendlyProjectileSpawnDistance: Float = -0.5
+    static let friendlyProjectileScreenOffsetX: Float = 0.2
+    static let friendlyProjectileScreenOffsetY: Float = -0.125
+    static let friendlyProjectileScreenOffsetZ: Float = -1
     
     static let defaultCollisionRadius: Float = 0.05
     

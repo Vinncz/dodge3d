@@ -47,13 +47,53 @@ struct ContentManagement: UIViewRepresentable {
         
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */
         func session ( _ session: ARSession, didUpdate frame: ARFrame ) {
-            for engine in self.managedEngine {
+            self.managedEngine.forEach({ engine in
+                switch engine {
+                    case is ShootingEngine:
+//                        let e = engine as! ShootingEngine
+//                        what to do when engine is an instance of ShootingEngine
+                        break
+                        
+                    case is LegacyHomingEngine:
+//                        let e = engine as! HomingEngine
+//                        what to do when engine is an instace of HomingEngine
+                        break
+                        
+                    case is TargetEngine:
+//                        let e = engine as! TargetEngine
+//                        what to do when engine is an instance of TargetEngine
+                        break
+                        
+                    default:
+                        break
+                }
+                
                 engine.updateObjectPosition(frame: frame)
-            }
+            })
         }
         
         @objc func handleTap ( _ gesture: UITapGestureRecognizer ) {
             self.managedEngine.forEach({ engine in
+                switch engine {
+                    case is ShootingEngine:
+//                        let e = engine as! ShootingEngine
+//                        what to do when engine is an instance of ShootingEngine
+                        break
+                        
+                    case is LegacyHomingEngine:
+//                        let e = engine as! HomingEngine
+//                        what to do when engine is an instace of HomingEngine
+                        break
+                        
+                    case is TargetEngine:
+//                        let e = engine as! TargetEngine
+//                        what to do when engine is an instance of TargetEngine
+                        break
+                        
+                    default:
+                        break
+                }
+                
                 engine.spawnObject()
             })
         }
@@ -62,6 +102,26 @@ struct ContentManagement: UIViewRepresentable {
             if ( gesture.state == .began ) {
                 holdTimer = Timer.scheduledTimer(withTimeInterval: GameConfigs.summonDelay, repeats: true) { [self] _ in
                     self.managedEngine.forEach({ engine in
+                        switch engine {
+                            case is ShootingEngine:
+//                                let e = engine as! ShootingEngine
+//                                what to do when engine is an instance of ShootingEngine
+                                break
+                                
+                            case is LegacyHomingEngine:
+//                                let e = engine as! HomingEngine
+//                                what to do when engine is an instace of HomingEngine
+                                break
+                                
+                            case is TargetEngine:
+//                                let e = engine as! TargetEngine
+//                                what to do when engine is an instance of TargetEngine
+                                break
+                                
+                            default:
+                                break
+                        }
+                        
                         engine.spawnObject()
                     })
                 }
@@ -74,7 +134,7 @@ struct ContentManagement: UIViewRepresentable {
         }
     }
     
-    func exertConfigs ( _ arView: ARView, _ configs: ARWorldTrackingConfiguration ) {
+    func exertConfigs ( _ arView: ARView, _ configs: ARConfiguration ) {
         arView.session.run(configs)
     }
     func attachHoldGestureRecognizer ( _ context: ContentManagement.Context, _ arView: ARView ) {

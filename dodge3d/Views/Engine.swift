@@ -1,6 +1,7 @@
 import SwiftUI
 import ARKit
 import RealityKit
+import Observation
 
 @Observable class Engine {
     var manager: ARView?
@@ -8,9 +9,17 @@ import RealityKit
     var projectileSpeed:Float = GameConfigs.projectileSpeed
     var timer: Timer?
     
-    struct MovingObject {
+    class MovingObject {
+        var object   : ModelEntity
         var anchor   : AnchorEntity
         var direction: SIMD3<Float>
+        var gravityEf: Float = GameConfigs.projectileGravityInitialStrength
+        
+        init ( object: ModelEntity, anchor: AnchorEntity, direction: SIMD3<Float> ) {
+            self.object = object
+            self.anchor = anchor
+            self.direction = direction
+        }
     }
     
     /** Sets up the required ARView to attribute. Without the supplied ARView, nothing will be placed, moved, or visible. -- Think of ARView as a management agency that you signed up for. Without them, you cannot perform onto stage. */
@@ -42,7 +51,7 @@ import RealityKit
     func updateObjectPosition ( frame : ARFrame ) {}
     
     /** The method which calculates where the object is going to be, influenced by its speed and its direction vector */
-    func calculateObjectTrajectory ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {
+    func calculateObjectMovingDirection ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {
         return SIMD3<Float>(x: 0, y: 0, z: 0) 
     }
     
@@ -76,48 +85,64 @@ import RealityKit
 
 @Observable class ShootingEngine: Engine {
     
+    var ammoCapacity: Int
+    var reloadTime  : TimeInterval
+    
+    var isReloading : Bool = false
+    var usedAmmo    : Int = 0
+    
+    init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
+        self.ammoCapacity = ammoCapacity
+        self.reloadTime = reloadTimeInSeconds
+    }
+    
+    func reload ( ) {
+        isReloading = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + reloadTime) {
+            self.isReloading = false
+            self.usedAmmo = 0
+        }
+    }
+    
     override func createObject ( ) -> ModelEntity {
-        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius - 0.025), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
+        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius / 2), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
         object.generateCollisionShapes(recursive: true)
-        object.physicsBody?.mode = .dynamic
-        
+      
         return object
     }
     
     override func spawnObject ( ) {
-        let cameraTransform = self.manager!.cameraTransform
-        let cameraDirection = cameraTransform.matrix.columns.2
+        guard !isReloading else { return }
+        guard usedAmmo < ammoCapacity else {
+            return
+        }
         
-        /* 
-         Imagine that there is present an orbit around the camera.
-         When you face a certain direction, 
-           the object will be spawned there in the orbit in front of you:
-           as opposed to where you are positioned right now, then modified by some offset
-           in either the x or z-axis.
-        */
-        let distance: Float = GameConfigs.shootingSpawnDistance
-        let angle   : Float = -6
-        
-        let spawnPositionRelativeToCamera = SIMD3<Float> (
-            x: cos(angle) * cameraDirection.x - sin(angle) * cameraDirection.z,
-            y: cameraDirection.y + GameConfigs.friendlyProjectileScreenOffsetY,
-            z: sin(angle) * cameraDirection.x + cos(angle) * cameraDirection.z
+        let offsetX = GameConfigs.friendlyProjectileScreenOffsetX
+        let offsetY = GameConfigs.friendlyProjectileScreenOffsetY
+        let offsetZ = GameConfigs.friendlyProjectileScreenOffsetZ
+
+        let spawnPosition = self.manager!.getPositionRelativeToCamera(
+            x: offsetX, 
+            y: offsetY, 
+            z: offsetZ
         )
-        let spawnPosition = cameraTransform.translation + distance * spawnPositionRelativeToCamera
         
         /* set up the coordinate on where you could place an object to the world */
         let anchor = AnchorEntity(world: spawnPosition)
         
         /* place your object on the allocated coordinate */
-        anchor.addChild(createObject())
+        let createdObject = createObject()
+        usedAmmo += 1
+        anchor.addChild(createdObject)
         
         /* make sure to make your anchor visible */
         self.manager!.scene.addAnchor(anchor)
         
         /* determine where your object will be heading to, and append it to the projectiles array */
-        let trajectory = calculateObjectTrajectory( from: anchor, to: anchor )
+        let trajectory = calculateObjectMovingDirection( from: anchor, to: anchor )
         projectiles.append (
             MovingObject (
+                object: createdObject,
                 anchor: anchor,
                 direction: trajectory
             )
@@ -127,35 +152,33 @@ import RealityKit
         despawnObject(targetAnchor: anchor)
     }
     
-    override func calculateObjectTrajectory ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {        
-        let cameraTransform = self.manager!.cameraTransform
-        let cameraDirection = cameraTransform.matrix.columns.2
-        
+    override func calculateObjectMovingDirection ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {    
         /* makes projectile go either left or right */
         let inaccuracyFactor = Float.random (  
             in: GameConfigs.friendlyProjectileInaccuracy,
-            /* make sure to use different rngenerator, or you'll see corelation between randomness */
             using: &GameConfigs.rng1
         )
         
         /* makes projectile go either up or down */
         let recoil = Float.random (  
             in: -1...1,
-            /* make sure to use different rngenerator, or you'll see corelation between randomness */
             using: &GameConfigs.rng2 
         )
         
         /* inaccuracy leads to the projectile being amiss by a few degrees */
         let angle = (Float.pi / inaccuracyFactor) * recoil
 
-        /* determine the projectile's trajectory based on the inaccuracy */
-        let trajectory = SIMD3<Float> (
-            x: cos(angle) * cameraDirection.x - sin(angle) * cameraDirection.z,
-            y: cameraDirection.y + angle,
-            z: sin(angle) * cameraDirection.x + cos(angle) * cameraDirection.z
+        /* determine the projectile's moving direction based on the inaccuracy */
+        let movingDirection = self.manager!.calculateNewPositionByRotatingDirection (
+            initialPosition: SIMD3<Float> (
+                x: self.manager!.getCameraDepthPosition().x,
+                y: self.manager!.getCameraDepthPosition().y,
+                z: self.manager!.getCameraDepthPosition().z
+            ), 
+            angleInDegrees: angle
         ) * -1
         
-        return trajectory
+        return movingDirection
     }
     
     override func updateObjectPosition ( frame: ARFrame ) {
@@ -163,15 +186,17 @@ import RealityKit
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
             let projectedPositionModifier = projectile.direction * self.projectileSpeed
             
-            let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
+            var projectedPosition         = projectileCurrentPosition + projectedPositionModifier
+            projectedPosition.y          -= projectile.gravityEf
             
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
+            projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
         }
     }
-
+    
 }
 
-@Observable class HomingEngine: Engine {
+@Observable class LegacyHomingEngine: Engine {
     var counter: Int = 0
     var offset : Float
     
@@ -180,21 +205,25 @@ import RealityKit
     }
     
     override func spawnObject ( ) {
+        let cameraTransform = self.manager!.cameraTransform
+        
         var anchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
         if let cameraTransform = self.manager!.session.currentFrame?.camera.transform {
             var translation = matrix_identity_float4x4
-            translation.columns.3.z = GameConfigs.spawnDistance  // The object will appear 2 meters in the direction the camera is facing
+            translation.columns.3.z = GameConfigs.homingSpawnDistance  // The object will appear 2 meters in the direction the camera is facing
             let modifiedTransform = simd_mul(cameraTransform, translation)
             let position = SIMD3<Float>(modifiedTransform.columns.3.x + offset, modifiedTransform.columns.3.y, modifiedTransform.columns.3.z)
             anchor = AnchorEntity(world: position)
         }
         
-        anchor.addChild(createObject())
+        let object = createObject()
+        anchor.addChild(object)
         self.manager!.scene.addAnchor(anchor)
         
-        let trajectory = calculateObjectTrajectory(from: anchor, to: cameraAnchor)
+        let trajectory = calculateObjectMovingDirection(from: anchor, to: anchor)
         projectiles.append (
             MovingObject (
+                object: object, 
                 anchor: anchor,
                 direction: trajectory
             )
@@ -203,16 +232,16 @@ import RealityKit
         despawnObject(targetAnchor: anchor)
     }
     
-    override func calculateObjectTrajectory () -> SIMD3<Float> {
+    override func calculateObjectMovingDirection ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {
         let cameraTransform = self.manager!.cameraTransform
         let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x - (self.offset / 2), y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
         
         // multiply by -1 to direct the projectile to the front of the camera
-        var direction = cameraForwardDirection
+        let direction = cameraForwardDirection
         
-        let angle = Float.random(in: -GameConfigs.projectileRandomnessSpecifier...GameConfigs.projectileRandomnessSpecifier)
-        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * GameConfigs.projectileRandomnessMultiplier
-        direction += offset
+//        let angle = Float.random(in: -GameConfigs.projectileRandomnessSpecifier...GameConfigs.projectileRandomnessSpecifier)
+//        let offset = SIMD3<Float>(cos(angle), 0, sin(angle)) * GameConfigs.projectileRandomnessMultiplier
+//        direction += offset
         
         return direction
     }
@@ -270,7 +299,6 @@ import RealityKit
     
     private func randomPositionInFrontOfCamera() -> SIMD3<Float> {
         let cameraTransform = self.manager!.cameraTransform
-        let cameraForwardDirection = SIMD3<Float>(x: cameraTransform.matrix.columns.2.x, y: cameraTransform.matrix.columns.2.y, z: cameraTransform.matrix.columns.2.z)
         
         let randomDistance = Float.random(in: 1.0...4.0) // Jarak acak dari kamera
         let randomAngle = Float.random(in: -Float.pi...Float.pi) // Sudut acak
