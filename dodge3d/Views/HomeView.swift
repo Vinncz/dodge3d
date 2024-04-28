@@ -15,11 +15,18 @@ struct HomeView: View {
     var body: some View {
         ZStack{
             Rectangle()
-                .foregroundColor(.black.opacity(0.85))
+                .foregroundColor(.black.opacity(0.25))
                 .ignoresSafeArea()
             
             VStack{
-                Title(title1: "DODGE", title2: "3D", color1: neonBlue, color2: neonPink)
+//                Title(title1: "DODGE", title2: "3D", color1: neonPink, color2: neonPink)
+                Image("logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    
+                Spacer()
                 
                 Button{
                     print("test")
@@ -34,15 +41,17 @@ struct HomeView: View {
                 Spacer()
                 
                 VStack{
-                    Text("Your Top Score:")
+                    Text("🔝:")
                         .font(.title2)
                         .fontWeight(.medium)
-                        .foregroundColor(neonBlue)
+                        .foregroundColor(.black)
                     Text("20")
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(neonPink)
                 }
+                .padding(.top)
+                
                 
                 Spacer()
             }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "5A591239-31EA-41D0-B47A-18FE2BDF1CC6"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0F7E6B42-4C24-414F-8494-ABE4AB18B9E0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "dodge3d/Views/Engine.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "5"
+            endingLineNumber = "5"
+            landmarkName = "Engine"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "0F7E6B42-4C24-414F-8494-ABE4AB18B9E0 - 4a30f7b0fc7bb845"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "dodge3d.Engine.deinit"
+                  moduleName = "dodge3d"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/nafis-macbook/Documents/Apple%20Developer%20Academy/dodge3d/dodge3d/Views/Engine.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "0F7E6B42-4C24-414F-8494-ABE4AB18B9E0 - 2cdf90305f69779a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "dodge3d.Engine.__deallocating_deinit"
+                  moduleName = "dodge3d"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/nafis-macbook/Documents/Apple%20Developer%20Academy/dodge3d/dodge3d/Views/Engine.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "0F7E6B42-4C24-414F-8494-ABE4AB18B9E0 - 7b70a76e12ff4c12"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "dodge3d.Engine.__allocating_init() -&gt; dodge3d.Engine"
+                  moduleName = "dodge3d"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/nafis-macbook/Documents/Apple%20Developer%20Academy/dodge3d/dodge3d/Views/Engine.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "0F7E6B42-4C24-414F-8494-ABE4AB18B9E0 - 505f81727916723b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "dodge3d.Engine.init() -&gt; dodge3d.Engine"
+                  moduleName = "dodge3d"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///var/folders/yr/5m1wb1n5057dkd4nhc_vtbxc0000gn/T/swift-generated-sources/@__swiftmacro_7dodge3d6EngineC7manager18ObservationTrackedfMp_.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1"
+                  endingLineNumber = "1">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

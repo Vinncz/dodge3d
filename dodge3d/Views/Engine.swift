@@ -72,7 +72,26 @@ import RealityKit
     func handleCollisionWithCamera ( objectResponsible: MovingObject ) {}
     
     func handleDebug ( message: Any ) {}
+    
+//    func loadUSDZ(named name: String) -> ModelEntity? {
+//        let url = Bundle.main.url(forResource: name, withExtension: "usdz")
+//        guard let url = url else {
+//            debugPrint("Error: Unable to find USDZ asset \(name)")
+//            return nil
+//        }
+//        return ModelEntity(url: url)
+//    }
+//
+//    func createObject() -> ModelEntity? {
+//        guard let entity = loadUSDZ(named: "Plasma") else {
+//            return nil
+//        }
+//        entity.generateCollisionShapes(recursive: true)
+//        entity.physicsBody?.mode = .dynamic
+//        return entity
+//    }
 }
+
 
 @Observable class ShootingEngine: Engine {
     
