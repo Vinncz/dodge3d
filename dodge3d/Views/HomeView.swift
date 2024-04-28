@@ -13,7 +13,7 @@ struct HomeView: View {
     var body: some View {
         ZStack{
             Rectangle()
-                .foregroundColor(.black.opacity(0.25))
+                .foregroundColor(.black.opacity(0.4))
                 .ignoresSafeArea()
             
             VStack{
