@@ -21,8 +21,8 @@ import RealityKit
     /** The method which creates an object, which then will need to be placed somewhere  */
     func createObject ( ) -> ModelEntity {
         let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
-        object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
+        object.generateCollisionShapes(recursive: true)
         
         return object
     }
@@ -282,10 +282,15 @@ import RealityKit
     }
     
     func createBoxObject() -> ModelEntity {
-        let boxSize = Float.random(in: 0.1...0.5) // Ukuran acak untuk kotak
+        let randomSize = Float.random(in: 0.1...0.5) // Ukuran acak untuk target box
+        let boxSize = randomSize
         let object = ModelEntity(mesh: .generateBox(size: SIMD3<Float>(repeating: boxSize)), materials: [SimpleMaterial(color: .magenta, isMetallic: true)])
+        
         object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
+        
+        //adding collision
+        object.collision = CollisionComponent(shapes: [.generateBox(size: [randomSize, randomSize, randomSize])], mode: .default, filter: .default)
         
         return object
     }
