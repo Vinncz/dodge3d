@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct GameConfigs {
     
@@ -30,5 +31,8 @@ struct GameConfigs {
     static let defaultCollisionRadius: Float = 0.05
     
     static let maxTargetCount: Int = 5
+    
+    static var neonBlue: Color = Color(red: 0.38, green: 0.86, blue: 0.96)
+    static var neonPink: Color = Color(red: 1.0, green: 0.0, blue: 0.67)
     
 }

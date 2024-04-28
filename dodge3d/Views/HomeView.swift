@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    
-    var neonBlue: Color = Color(red: 0.38, green: 0.86, blue: 0.96)
-    var neonPink: Color = Color(red: 1.0, green: 0.0, blue: 0.67)
+    var highScore:Int = 20
     
     var body: some View {
         ZStack{
@@ -41,14 +39,16 @@ struct HomeView: View {
                 Spacer()
                 
                 VStack{
+                    // ini buat highest score achieved by the user
+                    // gw mikirnya si pake SwiftData buat storenya
                     Text("🔝:")
                         .font(.title2)
                         .fontWeight(.medium)
                         .foregroundColor(.black)
-                    Text("20")
+                    Text("\(highScore)")
                         .font(.title)
                         .fontWeight(.bold)
-                        .foregroundColor(neonPink)
+                        .foregroundColor(GameConfigs.neonPink)
                 }
                 .padding(.top)
                 
