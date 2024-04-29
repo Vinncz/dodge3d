@@ -5,11 +5,15 @@ import SwiftUI
 @Observable class ShootingEngine: Engine {
     var projectileSpeed = GameConfigs.friendlyProjectileSpeed
     
+    var projectileRadius = GameConfigs.defaultSphereRadius / 2
+    
     var ammoCapacity: Int
     var reloadTime  : TimeInterval
     
     var isReloading : Bool = false
     var usedAmmo    : Int = 0
+    
+    var targetEngineInstance: TargetEngine?
     
     init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
         self.ammoCapacity = ammoCapacity
@@ -25,11 +29,11 @@ import SwiftUI
     }
     
     override func createObject ( ) -> ModelEntity {
-        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.friendlySpehreRadius), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
+        let object = ModelEntity(mesh: .generateSphere(radius: self.projectileRadius), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
         object.generateCollisionShapes(recursive: true)
         
-        //adding collision
-        object.collision = CollisionComponent(shapes: [.generateSphere(radius: GameConfigs.friendlySpehreRadius)], mode: .default, filter: .default)
+        //adding collision to shooting engine
+        object.collision = CollisionComponent(shapes: [.generateSphere(radius: self.projectileRadius)], mode: .default, filter: .default)
       
         return object
     }
@@ -103,17 +107,40 @@ import SwiftUI
         return movingDirection
     }
     
-    override func updateObjectPosition ( frame: ARFrame ) {
+    override func updateObjectPosition(frame: ARFrame) {
         for projectile in projectiles {
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
             let projectedPositionModifier = projectile.direction * self.projectileSpeed
-            
-            var projectedPosition         = projectileCurrentPosition + projectedPositionModifier
-            projectedPosition.y          -= projectile.gravityEf
-            
+
+            var projectedPosition = projectileCurrentPosition + projectedPositionModifier
+            projectedPosition.y -= projectile.gravityEf
+
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
+
+            // Deteksi kollision dengan setiap box dari TargetEngine
+            self.targetEngineInstance!.boxesAnchors.forEach({ anchor in
+//                print("ada \(targetEngineInstance?.boxesAnchors.count) objects yang targetEngine buat")
+                print("selisih jarak diantara projectile's position dengan anchor's positon: \(length(anchor.position(relativeTo: nil) - projectedPosition) )")
+                
+                print("anchor yang ada di index \(targetEngineInstance!.boxesAnchors.firstIndex(of: anchor)), berada di position \(anchor.position(relativeTo: nil))")
+                if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
+                    print("kena box di posisi \(anchor.position(relativeTo: nil))")
+                    self.manager?.scene.removeAnchor(anchor)
+                    
+                    self.targetEngineInstance!.boxesAnchors.removeAll{
+                        $0 == anchor
+                    }
+                }
+            })
         }
+    }
+
+    private func handleCollisionBetweenProjectile(_ projectile: MovingObject, andTarget target: MovingObject) {
+        // Hapus box dari adegan
+        self.manager?.scene.removeAnchor(target.anchor)
+        // Hapus target dari array projectiles di TargetEngine
+//        targetEngine.projectiles.removeAll { $0.anchor == target.anchor }
     }
 }
 

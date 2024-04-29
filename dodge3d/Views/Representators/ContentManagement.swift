@@ -18,7 +18,7 @@ struct ContentManagement: UIViewRepresentable {
         
         setupEngines(arView)
         
-        context.coordinator.setupCollisions()
+//        context.coordinator.setupCollisions()
         
         return arView
     }
@@ -49,22 +49,27 @@ struct ContentManagement: UIViewRepresentable {
     class Coordinator: NSObject, ARSessionDelegate {
         var managedEngine: [Engine]
         var holdTimer: Timer?
+        
+        //array for collisions
         var collisionSubscriptions = [Cancellable]()
         
         init ( _managedEngine: [Engine] ) {
             self.managedEngine = _managedEngine
         }
         
-        func setupCollisions(){
-            self.managedEngine.forEach({engine in
-                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Began.self){ event in
-                    print("BEGIN")
-                })!)
-                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Ended.self){ event in
-                    print("ENDED")
-                })!)
-            })
-        }
+//        //function to set up Collisions -> to add every single arView to collisionSubcriptions array
+//        func setupCollisions(){
+//            self.managedEngine.forEach({engine in
+//                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Began.self){ event in
+//                    //begin event
+//                    print("BEGIN")
+//                })!)
+//                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Ended.self){ event in
+//                    //end event
+//                    print("ENDED")
+//                })!)
+//            })
+//        }
         
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */
         func session ( _ session: ARSession, didUpdate frame: ARFrame ) {
@@ -102,30 +107,31 @@ struct ContentManagement: UIViewRepresentable {
             self.managedEngine.forEach({ engine in
                 switch engine {
                     case is ShootingEngine:
-//                        let e = engine as! ShootingEngine
-//                        what to do when engine is an instance of ShootingEngine
+                        let e = engine as! ShootingEngine
+                        e.spawnObject()
+
                         break
                         
                     case is HomingEngine:
-//                        let e = engine as! HomingEngine
-//                        what to do when engine is an instace of HomingEngine
+                        let e = engine as! HomingEngine
+                        e.spawnObject()
+                    
                         break
                         
                     case is LegacyHomingEngine:
-//                        let e = engine as! LegacyHomingEngine
-//                        what to do when engine is an instace of HomingEngine
+                        let e = engine as! LegacyHomingEngine
+                        e.spawnObject()
+                    
                         break
                         
                     case is TargetEngine:
-//                        let e = engine as! TargetEngine
-//                        what to do when engine is an instance of TargetEngine
+//                      let e = engine as! TargetEngine
+
                         break
                         
                     default:
                         break
                 }
-                
-                engine.spawnObject()
             })
         }
         
@@ -135,30 +141,31 @@ struct ContentManagement: UIViewRepresentable {
                     self.managedEngine.forEach({ engine in
                         switch engine {
                             case is ShootingEngine:
-//                                let e = engine as! ShootingEngine
-//                                what to do when engine is an instance of ShootingEngine
+                                let e = engine as! ShootingEngine
+                                e.spawnObject()
+
                                 break
                                 
                             case is HomingEngine:
-//                                let e = engine as! HomingEngine
-//                                what to do when engine is an instace of HomingEngine
+                                let e = engine as! HomingEngine
+                                e.spawnObject()
+                            
                                 break
                                 
                             case is LegacyHomingEngine:
-//                                let e = engine as! LegacyHomingEngine
-//                                what to do when engine is an instace of HomingEngine
+                                let e = engine as! LegacyHomingEngine
+                                e.spawnObject()
+                            
                                 break
                                 
                             case is TargetEngine:
-//                                let e = engine as! TargetEngine
-//                                what to do when engine is an instance of TargetEngine
+        //                      let e = engine as! TargetEngine
+
                                 break
                                 
                             default:
                                 break
                         }
-                        
-                        engine.spawnObject()
                     })
                 }
                 
