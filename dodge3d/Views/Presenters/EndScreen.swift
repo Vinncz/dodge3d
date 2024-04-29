@@ -13,9 +13,10 @@ struct EndScreen: View {
     
     var body: some View {
         ZStack {
-            Rectangle()
-                .foregroundColor(.black.opacity(0.4))
-                .ignoresSafeArea()
+            ContentManagement(
+                manages: []
+            )
+            
             VStack {
                 Image("logo")
                     .resizable()
