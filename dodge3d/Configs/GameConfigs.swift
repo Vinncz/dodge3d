@@ -12,9 +12,12 @@ struct GameConfigs {
     static let debug: Bool = false
     
     /** Variable which controls how frequent a projectile should be spawned  */
-    static let summonDelay: TimeInterval = 0.2
+    static let spawnDelay: TimeInterval = 0.2
     /** Variable which controls how long should it take before a projectile self-despawn  */
     static let despawnDelay: Double = 3
+    
+    static let hostileAmmoCapacity: Int = 30
+    static let hostileReloadDuration: TimeInterval = 4
     
     /** Variable which controls how fast projectiles should move */
     static let defaultProjectileSpeed: Float = 0.05

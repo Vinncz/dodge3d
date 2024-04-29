@@ -19,9 +19,6 @@ struct Canvas: View {
     
     @State var health = 10
     @State var navigateToEndScreen = false
-//    func checkForShootingEngineGotCollidedWithProjectile () {
-//        if ( shootingEngine.handleCollisionWithCamera(objectResponsible: <#T##MovingObject#>) )
-//    }
     
     init () {
         self.engines = [
@@ -32,15 +29,11 @@ struct Canvas: View {
             ,targetEngine
 //            ,legacyHomingEngine
         ]
-//        self.shootingEngine.targetEngineInstance = targetEngine
+        self.shootingEngine.targetEngineInstance = targetEngine
 //        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {_ in
 //            checkForShootingEngineGotCollidedWithProjectile()
 //        }
      }
-    
-//    func updateHealth () {
-//        shootingEngine.detectCollisionWithCamera(objectInQuestion: <#T##Engine.MovingObject#>, distance: <#T##Float#>)
-//    }
     
     var body: some View {
         NavigationView {

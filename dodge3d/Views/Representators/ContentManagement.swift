@@ -18,19 +18,65 @@ struct ContentManagement: UIViewRepresentable {
         
         setupEngines(arView)
         
-//        context.coordinator.setupCollisions()
-        
         return arView
     }
     
     func setupEngines ( _ view: ARView ) {
+        var spawnCountForHomingEngine: Int = 0
+        var timer: Timer?
+        
+        func smartlyManageHomingEnginesSpawningLogic () {
+            timer = Timer.scheduledTimer (
+                withTimeInterval: GameConfigs.spawnDelay, 
+                repeats: true
+            ) { _ in 
+                
+                self.manages.forEach { e in 
+                    guard ( e is HomingEngine ) else { return }
+                    
+                    e.spawnObject()
+                    spawnCountForHomingEngine += 1
+                    
+                    if ( spawnCountForHomingEngine >= GameConfigs.hostileAmmoCapacity ) {
+                        timer?.invalidate()
+                        spawnCountForHomingEngine = 0
+                        
+                        Timer.scheduledTimer(withTimeInterval: GameConfigs.hostileReloadDuration, repeats: false) { _ in
+                            smartlyManageHomingEnginesSpawningLogic()
+                        }
+                    }
+                }
+                
+            }
+        }
+        
         manages.forEach { engine in
             engine.setup(manager: view)
             
-            if ( engine is HomingEngine ) {
-                Timer.scheduledTimer(withTimeInterval: GameConfigs.summonDelay, repeats: true) {_ in 
-                    engine.spawnObject()
-                }
+            switch ( engine ) {
+                case is ShootingEngine:
+                    let e = engine as! ShootingEngine
+                    e.setup(manager: view)
+                    
+                    break
+                    
+                case is HomingEngine:
+                    let e = engine as! HomingEngine
+                    e.setup(manager: view)
+                    
+                    smartlyManageHomingEnginesSpawningLogic()
+                    break
+                    
+                case is TargetEngine:
+                    let e = engine as! TargetEngine
+                    e.setup(manager: view)
+                    
+                    break
+                    
+                default:
+                    engine.setup(manager: view)
+                    
+                    break
             }
         }
     }
@@ -56,20 +102,6 @@ struct ContentManagement: UIViewRepresentable {
         init ( _managedEngine: [Engine] ) {
             self.managedEngine = _managedEngine
         }
-        
-//        //function to set up Collisions -> to add every single arView to collisionSubcriptions array
-//        func setupCollisions(){
-//            self.managedEngine.forEach({engine in
-//                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Began.self){ event in
-//                    //begin event
-//                    print("BEGIN")
-//                })!)
-//                collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Ended.self){ event in
-//                    //end event
-//                    print("ENDED")
-//                })!)
-//            })
-//        }
         
         /* Inherited from protocol ARSessionDelegate. Refrain from renaming the following */
         func session ( _ session: ARSession, didUpdate frame: ARFrame ) {
@@ -137,7 +169,7 @@ struct ContentManagement: UIViewRepresentable {
         
         @objc func handleHold ( _ gesture: UILongPressGestureRecognizer ) {
             if ( gesture.state == .began ) {
-                holdTimer = Timer.scheduledTimer(withTimeInterval: GameConfigs.summonDelay, repeats: true) { [self] _ in
+                holdTimer = Timer.scheduledTimer(withTimeInterval: GameConfigs.spawnDelay, repeats: true) { [self] _ in
                     self.managedEngine.forEach({ engine in
                         switch engine {
                             case is ShootingEngine:

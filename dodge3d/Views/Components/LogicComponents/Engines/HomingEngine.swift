@@ -26,15 +26,11 @@ import SwiftUI
     } 
     
     override func createObject ( ) -> ModelEntity {
-//        guard let entity = try? ModelEntity.loadModel(named: "Anti-Tank_Turret") else {
-            let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
-            object.physicsBody?.mode = .dynamic
-            object.generateCollisionShapes(recursive: true)
-            
-            return object
-//        }
+        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
+        object.physicsBody?.mode = .dynamic
+        object.generateCollisionShapes(recursive: true)
         
-//        return entity
+        return object
     }
     
     override func spawnObject ( ) {
