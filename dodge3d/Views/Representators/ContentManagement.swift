@@ -49,6 +49,8 @@ struct ContentManagement: UIViewRepresentable {
     class Coordinator: NSObject, ARSessionDelegate {
         var managedEngine: [Engine]
         var holdTimer: Timer?
+        
+        //array for collisions
         var collisionSubscriptions = [Cancellable]()
         
         init ( _managedEngine: [Engine] ) {
