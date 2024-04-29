@@ -27,6 +27,9 @@ import SwiftUI
     override func createObject ( ) -> ModelEntity {
         let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius / 2), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
         object.generateCollisionShapes(recursive: true)
+        
+        //adding collision to shooting engine
+        object.collision = CollisionComponent(shapes: [.generateSphere(radius: GameConfigs.defaultSphereRadius / 2)], mode: .default, filter: .default)
       
         return object
     }

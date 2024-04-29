@@ -17,7 +17,7 @@ struct HomeView: View {
                 .ignoresSafeArea()
             
             VStack{
-//                Title(title1: "DODGE", title2: "3D", color1: neonPink, color2: neonPink)
+//              Title(title1: "DODGE", title2: "3D", color1: neonPink, color2: neonPink)
                 Image("logo")
                     .resizable()
                     .scaledToFit()

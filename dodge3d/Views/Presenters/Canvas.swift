@@ -6,7 +6,7 @@ struct Canvas: View {
     @State var progress = 0.0
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
-    let shootingEngine       = ShootingEngine(ammoCapacity: 12, reloadTimeInSeconds: 4)
+    let shootingEngine       = ShootingEngine(ammoCapacity: 12, reloadTimeInSeconds: 3)
     let homingEngine         = HomingEngine()
     let legacyHomingEngine   = LegacyHomingEngine()
     let legacyHomingEngineLe = LegacyHomingEngine(0.2)
@@ -16,8 +16,9 @@ struct Canvas: View {
     
     init () {
         self.engines = [
-            shootingEngine
-            ,homingEngine
+            shootingEngine,
+            homingEngine,
+            targetEngine
 //            ,legacyHomingEngine
         ]
     }
