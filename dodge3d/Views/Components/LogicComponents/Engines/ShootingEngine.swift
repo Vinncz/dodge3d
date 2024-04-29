@@ -123,7 +123,10 @@ import SwiftUI
             self.targetEngineInstance!.targetObjects.forEach({ target in
                 var anchor = target.boxAnchor
                 if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
-                    print("kena box di posisi \(anchor.position(relativeTo: nil))")
+                    
+                    //apply buff based on buffCode
+                    applyBuff(buffCode: target.buff)
+                    
                     self.manager?.scene.removeAnchor(anchor)
                     
                     self.targetEngineInstance!.targetObjects.removeAll{
@@ -131,6 +134,18 @@ import SwiftUI
                     }
                 }
             })
+        }
+    }
+    
+    private func applyBuff(buffCode: Int){
+        if (buffCode == 1){
+            self.ammoCapacity += 5
+        }
+        else if (buffCode == 2){
+            //buff no.2
+        }
+        else if (buffCode == 3){
+            //buff no.3
         }
     }
 

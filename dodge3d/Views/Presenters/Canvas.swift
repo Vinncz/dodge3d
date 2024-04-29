@@ -4,7 +4,6 @@ import RealityKit
 
 struct Canvas: View {
     @State var progress = 0.0
-    @State var ammoCapacity: Int = 12
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     let shootingEngine       = ShootingEngine(ammoCapacity: 12, reloadTimeInSeconds: 3)
@@ -28,7 +27,7 @@ struct Canvas: View {
             targetEngine
 //            ,legacyHomingEngine
         ]
-//        self.shootingEngine.targetEngineInstance = targetEngine
+        self.shootingEngine.targetEngineInstance = targetEngine
 //        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {_ in
 //            checkForShootingEngineGotCollidedWithProjectile()
 //        }
