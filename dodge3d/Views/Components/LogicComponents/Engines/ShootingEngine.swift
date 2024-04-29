@@ -13,6 +13,7 @@ import SwiftUI
     var isReloading : Bool = false
     var usedAmmo    : Int = 0
     
+    var homignEngineInstance: HomingEngine?
     var targetEngineInstance: TargetEngine?
     
     init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
@@ -119,17 +120,14 @@ import SwiftUI
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
             // Deteksi kollision dengan setiap box dari TargetEngine
-            self.targetEngineInstance!.boxesAnchors.forEach({ anchor in
-//                print("ada \(targetEngineInstance?.boxesAnchors.count) objects yang targetEngine buat")
-                print("selisih jarak diantara projectile's position dengan anchor's positon: \(length(anchor.position(relativeTo: nil) - projectedPosition) )")
-                
-                print("anchor yang ada di index \(targetEngineInstance!.boxesAnchors.firstIndex(of: anchor)), berada di position \(anchor.position(relativeTo: nil))")
+            self.targetEngineInstance!.targetObjects.forEach({ target in
+                var anchor = target.boxAnchor
                 if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
                     print("kena box di posisi \(anchor.position(relativeTo: nil))")
                     self.manager?.scene.removeAnchor(anchor)
                     
-                    self.targetEngineInstance!.boxesAnchors.removeAll{
-                        $0 == anchor
+                    self.targetEngineInstance!.targetObjects.removeAll{
+                        $0.boxAnchor == anchor
                     }
                 }
             })
@@ -142,5 +140,18 @@ import SwiftUI
         // Hapus target dari array projectiles di TargetEngine
 //        targetEngine.projectiles.removeAll { $0.anchor == target.anchor }
     }
+
+    
+    override func detectCollisionWithCamera (objectInQuestion object: Engine.MovingObject, distance distanceFromCamera: Float) -> Bool {
+            var hit = false
+            
+            homignEngineInstance!.projectiles.forEach({ projectile in
+                if ( length(object.anchor.position(relativeTo: nil) - projectile.anchor.position(relativeTo: nil)) < 1 ) {
+                    hit = true
+                }
+            })
+            
+            return hit
+        }
 }
 

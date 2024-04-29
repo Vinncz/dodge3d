@@ -26,15 +26,25 @@ struct EndScreen: View {
                     
                 Spacer(minLength: 150)
                 
-                Button{
-                    print("test")
-                }label: {
-                    Image("replay_button")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 250)
-                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .clipShape(RoundedRectangle(cornerRadius: 30))
+//                Button(action: {}){
+//                    print("test")
+//                }label: {
+//                    Image("replay_button")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(width: 250)
+//                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+//                        .clipShape(RoundedRectangle(cornerRadius: 30))
+//                }
+                Button(action:{}) {
+                    NavigationLink(destination: Canvas()) {
+                        Image("replay_button")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 250)
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            .clipShape(RoundedRectangle(cornerRadius: 30))
+                    }
                 }
                 
                 Spacer()

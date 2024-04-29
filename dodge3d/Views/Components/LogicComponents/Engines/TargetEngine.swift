@@ -4,7 +4,19 @@ import SwiftUI
 
 @Observable class TargetEngine: Engine {
     var instanceCount = 0
-    var boxesAnchors: [AnchorEntity] = []
+    var targetObjects: [TargetObject] = []
+    
+    class TargetObject {
+        var boxAnchor: AnchorEntity
+        var buff: Int
+        //1 -> buff ammo
+        //2 -> buff ...
+        
+        init (boxAnchor: AnchorEntity, buff: Int){
+            self.boxAnchor = boxAnchor
+            self.buff = buff
+        }
+    }
     
     private func randomPositionInFrontOfCamera() -> SIMD3<Float> {
 //        let cameraTransform = self.manager!.cameraTransform
@@ -48,7 +60,10 @@ import SwiftUI
             self.manager!.scene.addAnchor(anchor)
             
             self.instanceCount += 1
-            self.boxesAnchors.append(anchor)
+            
+            let target = TargetObject(boxAnchor: anchor, buff: Int.random(in: 1...3))
+            
+            self.targetObjects.append(target)
         }
     }
     
