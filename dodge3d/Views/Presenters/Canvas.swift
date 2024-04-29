@@ -7,7 +7,9 @@ struct Canvas: View {
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     let shootingEngine       = ShootingEngine(ammoCapacity: 12, reloadTimeInSeconds: 4)
-    let homingEngine         = HomingEngine()
+    let homingEngineLe       = HomingEngine().setSpawnPosition(newPosition: [-2, 0, -5])
+    let homingEngineMi       = HomingEngine().setSpawnPosition(newPosition: [0, 0, -5])
+    let homingEngineRi       = HomingEngine().setSpawnPosition(newPosition: [2, 0, -5])
     let legacyHomingEngine   = LegacyHomingEngine()
     let legacyHomingEngineLe = LegacyHomingEngine(0.2)
     let legacyHomingEngineRi = LegacyHomingEngine(-0.2)
@@ -17,7 +19,10 @@ struct Canvas: View {
     init () {
         self.engines = [
             shootingEngine
-            ,homingEngine
+//            ,homingEngineLe
+            ,homingEngineMi
+//            ,homingEngineRi
+            ,targetEngine
 //            ,legacyHomingEngine
         ]
     }

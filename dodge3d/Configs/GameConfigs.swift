@@ -11,24 +11,34 @@ struct GameConfigs {
     /** Determines whether your app should print debug information to console */
     static let debug: Bool = false
     
-    /** The time taken between rendering projectile to the screen  */
+    /** Variable which controls how frequent a projectile should be spawned  */
     static let summonDelay: TimeInterval = 0.2
+    /** Variable which controls how long should it take before a projectile self-despawn  */
     static let despawnDelay: Double = 3
-    static let projectileSpeed: Float = 0.05
     
-    static let hostileProjectileSpeed: Float = 0.1
+    /** Variable which controls how fast projectiles should move */
+    static let defaultProjectileSpeed: Float = 0.05
+    /** Variable which controls how fast projectiles of enemy-allegiance are moving */
+    static let hostileProjectileSpeed: Float  = 0.075
+    /** Variable which controls how fast projectiles of your allegiance are moving */
+    static let friendlyProjectileSpeed: Float = 0.05
     
+    /** Variable which controls how accurate your shooting are */
     static let friendlyProjectileInaccuracy: ClosedRange<Float> = 96...128 // the least accurate being 1 ÷ 96 and the most accurate being 1 ÷ 128
-    static let hostileProjectileInaccuracy : ClosedRange<Float> = 72...96
+    /** Variable which controls how accurate your enemies shooting are */
+    static let hostileProjectileInaccuracy : ClosedRange<Float> = 48...72
     
-    static let shootingSpawnDistance: Float = -0.5
+    /** Variable which is used by LegacyHomingEngine. It controls how far away, from camera, should a projectile spawn at */
     static let homingSpawnDistance: Float = -2.5
     
+    /** Variable which controls how large a default projectile should be. Default projectile use the ModelEntity of Sphere -- thus this variable will be used. */
     static let defaultSphereRadius: Float = 0.05
+    
+    static let friendlySpehreRadius: Float = 0.025
+    static let hostileSphereRadius : Float = 0.75
     
     static let projectileGravityInitialStrength: Float = 0.0025
     static let projectileGravityParabolicMultiplier: Float = 0.01
-    
     
     static let friendlyProjectileSpawnDistance: Float = -0.5
     static let friendlyProjectileScreenOffsetX: Float = 0.2

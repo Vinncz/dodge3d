@@ -17,6 +17,7 @@
 		20DB27622BDEB3AF00E1AA03 /* UIButon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20DB27612BDEB3AF00E1AA03 /* UIButon.swift */; };
 		20DB27652BDEB41300E1AA03 /* Sizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20DB27642BDEB41300E1AA03 /* Sizes.swift */; };
 		20DB27672BDEB46100E1AA03 /* ShootingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20DB27662BDEB46100E1AA03 /* ShootingEngine.swift */; };
+		20DB27692BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 20DB27682BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz */; };
 		20E1C1062BD7BDE200F514E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1052BD7BDE200F514E6 /* AppDelegate.swift */; };
 		20E1C1082BD7BDE200F514E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E1C1072BD7BDE200F514E6 /* ContentView.swift */; };
 		20E1C10A2BD7BDE300F514E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20E1C1092BD7BDE300F514E6 /* Assets.xcassets */; };
@@ -74,6 +75,7 @@
 		20DB27612BDEB3AF00E1AA03 /* UIButon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButon.swift; sourceTree = "<group>"; };
 		20DB27642BDEB41300E1AA03 /* Sizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sizes.swift; sourceTree = "<group>"; };
 		20DB27662BDEB46100E1AA03 /* ShootingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShootingEngine.swift; sourceTree = "<group>"; };
+		20DB27682BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "Anti-Tank_Turret.usdz"; sourceTree = "<group>"; };
 		20E1C1022BD7BDE200F514E6 /* dodge3d.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dodge3d.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20E1C1052BD7BDE200F514E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		20E1C1072BD7BDE200F514E6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			children = (
 				DC8DD49D2BDA4A5800097192 /* Engine.swift */,
 				20DB27582BDEB25A00E1AA03 /* HomingEngine.swift */,
+				20DB27682BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz */,
 				20DB275B2BDEB29000E1AA03 /* LegacyHomingEngine.swift */,
 				20DB27662BDEB46100E1AA03 /* ShootingEngine.swift */,
 				20DB275D2BDEB2B400E1AA03 /* TargetEngine.swift */,
@@ -465,6 +468,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20DB27692BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz in Resources */,
 				20E1C10D2BD7BDE400F514E6 /* Preview Assets.xcassets in Resources */,
 				20E1C10A2BD7BDE300F514E6 /* Assets.xcassets in Resources */,
 			);

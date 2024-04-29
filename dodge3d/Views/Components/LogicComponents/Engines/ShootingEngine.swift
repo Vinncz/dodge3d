@@ -3,7 +3,7 @@ import RealityKit
 import SwiftUI
 
 @Observable class ShootingEngine: Engine {
-    var projectileSpeed = GameConfigs.projectileSpeed
+    var projectileSpeed = GameConfigs.friendlyProjectileSpeed
     
     var ammoCapacity: Int
     var reloadTime  : TimeInterval
@@ -25,8 +25,11 @@ import SwiftUI
     }
     
     override func createObject ( ) -> ModelEntity {
-        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius / 2), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
+        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.friendlySpehreRadius), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
         object.generateCollisionShapes(recursive: true)
+        
+        //adding collision
+        object.collision = CollisionComponent(shapes: [.generateSphere(radius: GameConfigs.friendlySpehreRadius)], mode: .default, filter: .default)
       
         return object
     }

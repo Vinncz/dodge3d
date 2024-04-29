@@ -24,10 +24,7 @@ import SwiftUI
         
         object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
-        
-        //adding collision
-        object.collision = CollisionComponent(shapes: [.generateBox(size: [randomSize, randomSize, randomSize])], mode: .default, filter: .default)
-        
+                
         return object
     }
     

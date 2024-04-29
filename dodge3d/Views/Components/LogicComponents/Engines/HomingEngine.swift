@@ -3,21 +3,42 @@ import RealityKit
 import SwiftUI
 
 @Observable class HomingEngine: Engine {
+    var spawnPosition: SIMD3<Float> = [0, 0, -5]
     var projectileSpeed: Float = GameConfigs.hostileProjectileSpeed
     
     var previousCameraPosition: SIMD3<Float>?
     var previousTime: Float?
     
-    override func createObject ( ) -> ModelEntity {
-        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
-        object.physicsBody?.mode = .dynamic
-        object.generateCollisionShapes(recursive: true)
+    override func setup ( manager: ARView ) {
+        self.manager = manager
         
-        return object
+        spawnTurret()
+    }
+    
+    func spawnTurret () {
+        
+    }
+    
+    func setSpawnPosition ( newPosition: SIMD3<Float> ) -> HomingEngine {
+        self.spawnPosition = newPosition
+        
+        return self
+    } 
+    
+    override func createObject ( ) -> ModelEntity {
+//        guard let entity = try? ModelEntity.loadModel(named: "Anti-Tank_Turret") else {
+            let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
+            object.physicsBody?.mode = .dynamic
+            object.generateCollisionShapes(recursive: true)
+            
+            return object
+//        }
+        
+//        return entity
     }
     
     override func spawnObject ( ) {
-        let spawnPosition    = SIMD3<Float>(0, 0, -5)
+        let spawnPosition    = self.spawnPosition
         
         let anchor = AnchorEntity(world: spawnPosition)
         
@@ -65,7 +86,7 @@ import SwiftUI
         previousCameraPosition = cameraPosition
         
         let objectToCameraDistance = length(cameraPosition - objectPosition)
-        let timeToReachCamera = (objectToCameraDistance != 0 && GameConfigs.projectileSpeed != 0) ? objectToCameraDistance / GameConfigs.projectileSpeed : 0
+        let timeToReachCamera = (objectToCameraDistance != 0 && projectileSpeed != 0) ? objectToCameraDistance / projectileSpeed : 0
         
         let predictedCameraPosition = cameraPosition + cameraVelocity * timeToReachCamera
         
