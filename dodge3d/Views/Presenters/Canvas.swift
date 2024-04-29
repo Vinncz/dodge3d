@@ -14,7 +14,6 @@ struct Canvas: View {
     let targetEngine         = TargetEngine()
     var engines: [Engine]    = [ ]
     
-    @State var health = 10
     @State var navigateToEndScreen = false
 //    func checkForShootingEngineGotCollidedWithProjectile () {
 //        if ( shootingEngine.handleCollisionWithCamera(objectResponsible: <#T##MovingObject#>) )
@@ -46,8 +45,8 @@ struct Canvas: View {
                 VStack {
                     // Health bar
                     HStack{
-                        ForEach(0..<health, id: \.self) { _ in
-                                Image(systemName: "heart.fill")
+                        ForEach(0..<10, id: \.self) { index in
+                            Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
                                 .foregroundColor(.red)
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 7))
                         }

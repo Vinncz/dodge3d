@@ -7,6 +7,7 @@ import SwiftUI
     
     var projectileRadius = GameConfigs.defaultSphereRadius / 2
     
+    var health      : Int = 5
     var ammoCapacity: Int
     var reloadTime  : TimeInterval
     
@@ -139,10 +140,10 @@ import SwiftUI
     
     private func applyBuff(buffCode: Int){
         if (buffCode == 1){
-            self.ammoCapacity += 5
+            self.ammoCapacity += 3
         }
         else if (buffCode == 2){
-            //buff no.2
+            self.health += 1
         }
         else if (buffCode == 3){
             //buff no.3
