@@ -119,17 +119,14 @@ import SwiftUI
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
             // Deteksi kollision dengan setiap box dari TargetEngine
-            self.targetEngineInstance!.boxesAnchors.forEach({ anchor in
-//                print("ada \(targetEngineInstance?.boxesAnchors.count) objects yang targetEngine buat")
-                print("selisih jarak diantara projectile's position dengan anchor's positon: \(length(anchor.position(relativeTo: nil) - projectedPosition) )")
-                
-                print("anchor yang ada di index \(targetEngineInstance!.boxesAnchors.firstIndex(of: anchor)), berada di position \(anchor.position(relativeTo: nil))")
+            self.targetEngineInstance!.targetObjects.forEach({ target in
+                var anchor = target.boxAnchor
                 if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
                     print("kena box di posisi \(anchor.position(relativeTo: nil))")
                     self.manager?.scene.removeAnchor(anchor)
                     
-                    self.targetEngineInstance!.boxesAnchors.removeAll{
-                        $0 == anchor
+                    self.targetEngineInstance!.targetObjects.removeAll{
+                        $0.boxAnchor == anchor
                     }
                 }
             })
