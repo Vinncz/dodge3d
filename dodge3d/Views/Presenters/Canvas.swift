@@ -7,7 +7,7 @@ struct Canvas: View {
     @State var ammoCapacity: Int = 12
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
-    let shootingEngine       = ShootingEngine(ammoCapacity: ammoCapacity, reloadTimeInSeconds: 3)
+    let shootingEngine       = ShootingEngine(ammoCapacity: 12, reloadTimeInSeconds: 3)
     let homingEngine         = HomingEngine()
     let legacyHomingEngine   = LegacyHomingEngine()
     let legacyHomingEngineLe = LegacyHomingEngine(0.2)
@@ -17,9 +17,9 @@ struct Canvas: View {
     
     @State var health = 10
     @State var navigateToEndScreen = false
-    func checkForShootingEngineGotCollidedWithProjectile () {
-        if ( shootingEngine.handleCollisionWithCamera(objectResponsible: <#T##MovingObject#>) )
-    }
+//    func checkForShootingEngineGotCollidedWithProjectile () {
+//        if ( shootingEngine.handleCollisionWithCamera(objectResponsible: <#T##MovingObject#>) )
+//    }
     
     init () {
         self.engines = [
@@ -28,15 +28,15 @@ struct Canvas: View {
             targetEngine
 //            ,legacyHomingEngine
         ]
-        self.shootingEngine.targetEngineInstance = targetEngine
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {_ in
-            checkForShootingEngineGotCollidedWithProjectile()
-        }
+//        self.shootingEngine.targetEngineInstance = targetEngine
+//        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {_ in
+//            checkForShootingEngineGotCollidedWithProjectile()
+//        }
      }
     
-    func updateHealth () {
-        shootingEngine.detectCollisionWithCamera(objectInQuestion: <#T##Engine.MovingObject#>, distance: <#T##Float#>)
-    }
+//    func updateHealth () {
+//        shootingEngine.detectCollisionWithCamera(objectInQuestion: <#T##Engine.MovingObject#>, distance: <#T##Float#>)
+//    }
     
     var body: some View {
         NavigationView {
@@ -50,7 +50,7 @@ struct Canvas: View {
                         ForEach(0..<health, id: \.self) { _ in
                                 Image(systemName: "heart.fill")
                                 .foregroundColor(.red)
-                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 7))
                         }
                     }
                     
@@ -74,7 +74,7 @@ struct Canvas: View {
                     }
                     
                 }.padding()
-                    .frame(height: 100)
+                    .frame(height: 130)
             }
             .navigationBarTitle("")
             .navigationBarHidden(true)
