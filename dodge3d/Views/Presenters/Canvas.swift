@@ -4,7 +4,6 @@ import RealityKit
 
 struct Canvas: View {
     @State var progress = 0.0
-    @State var ammoCapacity: Int = 12
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     let shootingEngine       = ShootingEngine(ammoCapacity: 12, reloadTimeInSeconds: 4)
@@ -17,7 +16,6 @@ struct Canvas: View {
     let targetEngine         = TargetEngine()
     var engines: [Engine]    = [ ]
     
-    @State var health = 10
     @State var navigateToEndScreen = false
     
     init () {
@@ -44,8 +42,8 @@ struct Canvas: View {
                 VStack {
                     // Health bar
                     HStack{
-                        ForEach(0..<health, id: \.self) { _ in
-                                Image(systemName: "heart.fill")
+                        ForEach(0..<10, id: \.self) { index in
+                            Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
                                 .foregroundColor(.red)
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 7))
                         }

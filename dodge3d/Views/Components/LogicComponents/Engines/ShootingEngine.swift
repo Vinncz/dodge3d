@@ -7,6 +7,7 @@ import SwiftUI
     
     var projectileRadius = GameConfigs.defaultSphereRadius / 2
     
+    var health      : Int = 5
     var ammoCapacity: Int
     var reloadTime  : TimeInterval
     
@@ -123,7 +124,10 @@ import SwiftUI
             self.targetEngineInstance!.targetObjects.forEach({ target in
                 var anchor = target.boxAnchor
                 if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
-                    print("kena box di posisi \(anchor.position(relativeTo: nil))")
+                    
+                    //apply buff based on buffCode
+                    applyBuff(buffCode: target.buff)
+                    
                     self.manager?.scene.removeAnchor(anchor)
                     
                     self.targetEngineInstance!.targetObjects.removeAll{
@@ -131,6 +135,18 @@ import SwiftUI
                     }
                 }
             })
+        }
+    }
+    
+    private func applyBuff(buffCode: Int){
+        if (buffCode == 1){
+            self.ammoCapacity += 3
+        }
+        else if (buffCode == 2){
+            self.health += 1
+        }
+        else if (buffCode == 3){
+            //buff no.3
         }
     }
 
