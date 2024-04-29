@@ -21,6 +21,8 @@ struct Canvas: View {
             targetEngine
 //            ,legacyHomingEngine
         ]
+        
+        self.shootingEngine.targetEngineInstance = targetEngine
     }
     
     var body: some View {
