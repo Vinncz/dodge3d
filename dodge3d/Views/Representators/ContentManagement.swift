@@ -49,18 +49,23 @@ struct ContentManagement: UIViewRepresentable {
     class Coordinator: NSObject, ARSessionDelegate {
         var managedEngine: [Engine]
         var holdTimer: Timer?
+        
+        //array for collisions
         var collisionSubscriptions = [Cancellable]()
         
         init ( _managedEngine: [Engine] ) {
             self.managedEngine = _managedEngine
         }
         
+        //function to set up Collisions -> to add every single arView to collisionSubcriptions array
         func setupCollisions(){
             self.managedEngine.forEach({engine in
                 collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Began.self){ event in
+                    //begin event
                     print("BEGIN")
                 })!)
                 collisionSubscriptions.append((engine.manager?.scene.subscribe(to: CollisionEvents.Ended.self){ event in
+                    //end event
                     print("ENDED")
                 })!)
             })
