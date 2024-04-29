@@ -82,7 +82,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "B9E0EC5F-9402-47F0-9040-8F9416813258"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "dodge3d/Views/Presenters/HomeView.swift"
@@ -92,36 +92,6 @@
             endingLineNumber = "14"
             landmarkName = "body"
             landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "B9E0EC5F-9402-47F0-9040-8F9416813258 - 982f1fd33b80ea4d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "dodge3d.HomeView.body.getter : some"
-                  moduleName = "dodge3d"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nafis-macbook/Documents/Apple%20Developer%20Academy/dodge3d/dodge3d/Views/Presenters/HomeView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "14"
-                  endingLineNumber = "14">
-               </Location>
-               <Location
-                  uuid = "B9E0EC5F-9402-47F0-9040-8F9416813258 - 8f8347848ba12ab8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; SwiftUI.ZStack&lt;SwiftUI.TupleView&lt;(dodge3d.ContentManagement, &lt;&lt;opaque return type of SwiftUI.View.padding(SwiftUI.Edge.Set, Swift.Optional&lt;CoreGraphics.CGFloat&gt;) -&gt; some&gt;&gt;.0)&gt;&gt; in dodge3d.HomeView.body.getter : some"
-                  moduleName = "dodge3d"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nafis-macbook/Documents/Apple%20Developer%20Academy/dodge3d/dodge3d/Views/Presenters/HomeView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "14"
-                  endingLineNumber = "14">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -136,8 +106,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "75"
             endingLineNumber = "75"
-            landmarkName = "body"
-            landmarkType = "24">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

@@ -13,6 +13,7 @@ import SwiftUI
     var isReloading : Bool = false
     var usedAmmo    : Int = 0
     
+    var homignEngineInstance: HomingEngine?
     var targetEngineInstance: TargetEngine?
     
     init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
@@ -142,5 +143,18 @@ import SwiftUI
         // Hapus target dari array projectiles di TargetEngine
 //        targetEngine.projectiles.removeAll { $0.anchor == target.anchor }
     }
+
+    
+    override func detectCollisionWithCamera (objectInQuestion object: Engine.MovingObject, distance distanceFromCamera: Float) -> Bool {
+            var hit = false
+            
+            homignEngineInstance!.projectiles.forEach({ projectile in
+                if ( length(object.anchor.position(relativeTo: nil) - projectile.anchor.position(relativeTo: nil)) < 1 ) {
+                    hit = true
+                }
+            })
+            
+            return hit
+        }
 }
 

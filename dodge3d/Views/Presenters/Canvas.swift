@@ -14,6 +14,9 @@ struct Canvas: View {
     let targetEngine         = TargetEngine()
     var engines: [Engine]    = [ ]
     
+    @State var health = 10
+    @State var navigateToEndScreen = false
+    
     init () {
         self.engines = [
             shootingEngine,
@@ -23,15 +26,28 @@ struct Canvas: View {
         ]
         
         self.shootingEngine.targetEngineInstance = targetEngine
+     }
+    
+    func updateHealth () {
+        shootingEngine.detectCollisionWithCamera(objectInQuestion: <#T##Engine.MovingObject#>, distance: <#T##Float#>)
     }
     
     var body: some View {
-        ZStack {
+        NavigationView {
             VStack {
                 ContentManagement (
                     manages: self.engines
                 )
                 VStack {
+                    // Health bar
+                    HStack{
+                        ForEach(0..<health, id: \.self) { _ in
+                                Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
+                        }
+                    }
+                    
                     Text("Ammo: \( (shootingEngine.ammoCapacity) - shootingEngine.usedAmmo)/\(shootingEngine.ammoCapacity)")
                     
                     UIButton (
@@ -53,6 +69,18 @@ struct Canvas: View {
                     
                 }.padding()
                     .frame(height: 100)
+            }
+            .navigationBarTitle("")
+            .navigationBarHidden(true)
+            .background(
+                NavigationLink(destination: EndScreen(), isActive: $navigateToEndScreen) {
+                    EmptyView()
+                }
+            )
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                    self.navigateToEndScreen = true
+                }
             }
         }
     }
