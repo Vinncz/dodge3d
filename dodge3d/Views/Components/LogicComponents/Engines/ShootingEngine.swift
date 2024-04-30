@@ -7,7 +7,7 @@ import SwiftUI
     
     var projectileRadius = GameConfigs.defaultSphereRadius / 2
     
-    var health      : Int = 5
+    var health      : Int = 10
     var ammoCapacity: Int
     var reloadTime  : TimeInterval
     
