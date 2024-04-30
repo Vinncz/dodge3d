@@ -188,12 +188,12 @@ import SwiftUI
     }
     
     override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {
-//        counter += 1
+//        ShootingEngineInstance!.health -= 1
     }
     
     override func handleDebug(message: Any) {
         if ( GameConfigs.debug ) {
-            print(message)
+            `print`(message)
         }
     }
 }

@@ -148,6 +148,36 @@ import SwiftUI
                 }
             })
         }
+        
+        for projectile in homingEngineInstance!.projectiles {
+            let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
+            let projectedPositionModifier = projectile.direction * self.projectileSpeed
+            
+            let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
+            
+            projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
+
+            let cameraTransform = frame.camera.transform
+            let cameraPosition  = SIMD3<Float> (
+                cameraTransform.columns.3.x,
+                cameraTransform.columns.3.y,
+                cameraTransform.columns.3.z
+            )
+            
+            let distanceFromCamera = length(cameraPosition - projectedPosition)
+            
+            if ( homingEngineInstance!.detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera) ) {
+                handleCollisionWithCamera(objectResponsible: projectile)
+            }
+        }
+    }
+    
+    override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
+        if (self.health > 0){
+//            print("before: \(self.health)")
+            self.health -= 1
+//            print("after: \(self.health)")
+        }
     }
     
     private func applyBuff(buffCode: Int){
@@ -161,25 +191,17 @@ import SwiftUI
             //buff no.3
         }
     }
-
-    private func handleCollisionBetweenProjectile(_ projectile: MovingObject, andTarget target: MovingObject) {
-        // Hapus box dari adegan
-        self.manager?.scene.removeAnchor(target.anchor)
-        // Hapus target dari array projectiles di TargetEngine
-//        targetEngine.projectiles.removeAll { $0.anchor == target.anchor }
-    }
-
     
-    override func detectCollisionWithCamera (objectInQuestion object: Engine.MovingObject, distance distanceFromCamera: Float) -> Bool {
-            var hit = false
-            
-            homingEngineInstance!.projectiles.forEach({ projectile in
-                if ( length(object.anchor.position(relativeTo: nil) - projectile.anchor.position(relativeTo: nil)) < 1 ) {
-                    hit = true
-                }
-            })
-            
-            return hit
-        }
+//    override func detectCollisionWithCamera (objectInQuestion object: Engine.MovingObject, distance distanceFromCamera: Float) -> Bool {
+//            var hit = false
+//            
+//            homingEngineInstance!.projectiles.forEach({ projectile in
+//                if ( length(object.anchor.position(relativeTo: nil) - projectile.anchor.position(relativeTo: nil)) < 1 ) {
+//                    hit = true
+//                }
+//            })
+//            
+//            return hit
+//        }
 }
 
