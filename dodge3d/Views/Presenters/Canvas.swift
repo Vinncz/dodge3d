@@ -37,19 +37,26 @@ struct Canvas: View {
     var body: some View {
         NavigationView {
             VStack {
-                VStack {
-                    Text("Turret health: \(homingEngineMi.turret.health) / \(homingEngineMi.turret.maxHealth)")
+                
+                HStack {
+                    Image("turret")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    Text(": \(homingEngineMi.turret.health) / \(homingEngineMi.turret.maxHealth)")
                 }
+                .background(Color.clear)
+                
                 ContentManagement (
                     manages: self.engines
                 )
+            
                 VStack {
                     if ( homingEngineMi.turret.health <= 0 ) {
                         UIButton (
                             color: .green,
                             flex: true
                         ) {
-                            Text("Complete Level")
+                            Image(systemName: "flag.checkered.2.crossed")
                         } action: {
                             self.navigateToEndScreen = true
                         }
@@ -71,7 +78,13 @@ struct Canvas: View {
                             }
                         }
                         
-                        Text("Ammo: \( (shootingEngine.ammoCapacity) - shootingEngine.usedAmmo)/\(shootingEngine.ammoCapacity)")
+                        HStack {
+                            Image("bullet")
+                                .resizable()
+                                .frame(width: 30, height: 15)
+                            Text(": \( (shootingEngine.ammoCapacity) - shootingEngine.usedAmmo)/\(shootingEngine.ammoCapacity)")
+                        }
+                        
                         
                         UIButton (
                             flex: true
@@ -81,25 +94,27 @@ struct Canvas: View {
                                 Text("Reloading")
                             } else {
                                 Image(systemName: "arrow.circlepath")
-                                Text("Reload")
+//                                Text("Reload")
                             }
                             
                         } action: {
-                            guard ( !shootingEngine.isReloading ) else { return } 
+                            guard ( !shootingEngine.isReloading ) else { return }
                             shootingEngine.reload()
                         }
                         
                         UIButton (
                             flex: true
                         ) {
-                            Text("Change spawn position")
+                            Image(systemName: "play.fill")
                         } action: {
                             homingEngineMi.setSpawnPosition()
                         }
                     }
                     
-                }.padding()
-                    .frame(height: 256)
+                }
+                .padding()
+                .frame(height: 200)
+                .background(Color.clear)
             }
             .navigationBarTitle("")
             .navigationBarHidden(true)
