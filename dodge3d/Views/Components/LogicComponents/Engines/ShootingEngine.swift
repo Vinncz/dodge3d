@@ -4,7 +4,6 @@ import SwiftUI
 
 @Observable class ShootingEngine: Engine {
     var projectileSpeed = GameConfigs.friendlyProjectileSpeed
-    
     var projectileRadius = GameConfigs.defaultSphereRadius / 2
     
     var health      : Int = 10
@@ -122,20 +121,24 @@ import SwiftUI
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
+            
+            
+            // Detect collision with HomingEngine's turret
             let distanceFromTurret = length(projectedPosition - self.homingEngineInstance!.turret.position)
             let thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore = self.homingEngineInstance!.turret.nullifiedProjectile.contains(where: {
                 return $0.id == projectile.id
-            })
-            
-            if ( distanceFromTurret <= 0.4 && thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore == false ) {
+            })            
+            if ( distanceFromTurret <= GameConfigs.hostileHitboxRadius && thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore == false ) {
                 self.homingEngineInstance?.turret.nullifiedProjectile.append(projectile)
-                self.homingEngineInstance?.turret.health -= 1
+                if ( self.homingEngineInstance!.turret.health > 0 ) {
+                    self.homingEngineInstance!.turret.health -= 1
+                }
             }
             
             // Deteksi kollision dengan setiap box dari TargetEngine
             self.targetEngineInstance!.targetObjects.forEach({ target in
                 let anchor = target.boxAnchor
-                if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
+                if ( length(anchor.position(relativeTo: nil) - projectedPosition) < GameConfigs.buffBoxesHitboxRadius ) {
                     
                     //apply buff based on buffCode
                     applyBuff(buffCode: target.buff)
@@ -174,9 +177,7 @@ import SwiftUI
     
     override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
         if (self.health > 0){
-//            print("before: \(self.health)")
             self.health -= 1
-//            print("after: \(self.health)")
         }
     }
     
@@ -185,10 +186,11 @@ import SwiftUI
             self.ammoCapacity += 3
         }
         else if (buffCode == 2){
+            guard ( self.health < 10 ) else { return }
             self.health += 1
         }
         else if (buffCode == 3){
-            //buff no.3
+            self.reloadTime -= 0.2
         }
     }
     

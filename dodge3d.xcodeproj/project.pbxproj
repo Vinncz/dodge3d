@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		207C2A132BE0D54A00B7CF69 /* Gift_box.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 207C2A122BE0D54A00B7CF69 /* Gift_box.usdz */; };
 		20B76C482BD8E99C00D2A31E /* asd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C472BD8E99C00D2A31E /* asd.swift */; };
 		20B76C4B2BD96BFD00D2A31E /* GameConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C4A2BD96BFD00D2A31E /* GameConfigs.swift */; };
 		20B76C4E2BD9771600D2A31E /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C4D2BD9771600D2A31E /* Canvas.swift */; };
@@ -64,6 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		207C2A122BE0D54A00B7CF69 /* Gift_box.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Gift_box.usdz; sourceTree = "<group>"; };
 		20B76C472BD8E99C00D2A31E /* asd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = asd.swift; sourceTree = "<group>"; };
 		20B76C4A2BD96BFD00D2A31E /* GameConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConfigs.swift; sourceTree = "<group>"; };
 		20B76C4D2BD9771600D2A31E /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
@@ -206,8 +208,9 @@
 				20DB27582BDEB25A00E1AA03 /* HomingEngine.swift */,
 				20DB27682BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz */,
 				20DB276A2BE090E400E1AA03 /* Anti-Tank_Turret.scn */,
-				20DB275B2BDEB29000E1AA03 /* LegacyHomingEngine.swift */,
 				20DB27662BDEB46100E1AA03 /* ShootingEngine.swift */,
+				207C2A122BE0D54A00B7CF69 /* Gift_box.usdz */,
+				20DB275B2BDEB29000E1AA03 /* LegacyHomingEngine.swift */,
 				20DB275D2BDEB2B400E1AA03 /* TargetEngine.swift */,
 			);
 			path = Engines;
@@ -473,6 +476,7 @@
 			files = (
 				20DB27692BDFA9E600E1AA03 /* Anti-Tank_Turret.usdz in Resources */,
 				20E1C10D2BD7BDE400F514E6 /* Preview Assets.xcassets in Resources */,
+				207C2A132BE0D54A00B7CF69 /* Gift_box.usdz in Resources */,
 				20DB276B2BE090E400E1AA03 /* Anti-Tank_Turret.scn in Resources */,
 				20E1C10A2BD7BDE300F514E6 /* Assets.xcassets in Resources */,
 			);
@@ -730,7 +734,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"dodge3d/Preview Content\"";
-				DEVELOPMENT_TEAM = Z42WC948D7;
+				DEVELOPMENT_TEAM = STU45DAFT2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -762,7 +766,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"dodge3d/Preview Content\"";
-				DEVELOPMENT_TEAM = Z42WC948D7;
+				DEVELOPMENT_TEAM = STU45DAFT2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";

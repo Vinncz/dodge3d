@@ -71,6 +71,7 @@ import SwiftUI
     
     override func spawnObject ( ) {
         guard ( turretIsSpawned ) else { return }
+        guard ( turret.health > 0 ) else { return }
         
         let spawnPosition = self.spawnPosition
         
@@ -184,7 +185,7 @@ import SwiftUI
         let treshold = GameConfigs.defaultCollisionRadius
         
         if ( distanceFromCamera <= treshold ) { handleDebug(message: "they collided!") }
-        return distanceFromCamera < GameConfigs.defaultSphereRadius ? true : false
+        return distanceFromCamera <= GameConfigs.defaultSphereRadius ? true : false
     }
     
     override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {

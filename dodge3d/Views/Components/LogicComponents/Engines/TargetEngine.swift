@@ -21,8 +21,8 @@ import SwiftUI
     private func randomPositionInFrontOfCamera() -> SIMD3<Float> {
 //        let cameraTransform = self.manager!.cameraTransform
         
-        let randomToTheRightOrLeft = Float.random(in: -180...180, using: &GameConfigs.rng3)
-        let randomToTheFront = Float.random(in: 3...5) * -1
+        let randomToTheRightOrLeft = Float.random(in: -(Float.pi/2)...(Float.pi/2))
+        let randomToTheFront = Float.random(in: 4...6) * -1
         let spawnPosition = self.manager!.getPositionRelativeToCamera(distanceToCamera: randomToTheFront, angleInDegrees: self.manager!.convertDegreesToRadians(randomToTheRightOrLeft))
         
         let camerasFront = manager!.getCameraFrontDirectionVector()
@@ -43,10 +43,13 @@ import SwiftUI
     
     func createBoxObject() -> ModelEntity {
         let boxSize: Float = 0.5
-        let object = ModelEntity(mesh: .generateBox(size: SIMD3<Float>(repeating: boxSize)), materials: [SimpleMaterial(color: .magenta, isMetallic: true)])
+        let object = try! ModelEntity.loadModel(named: "Gift_box")
+        object.setScale([0.001, 0.001, 0.001], relativeTo: nil)
         
         object.generateCollisionShapes(recursive: true)
         object.physicsBody?.mode = .dynamic
+        
+        object.transform.translation.y -= 0.2
                 
         return object
     }

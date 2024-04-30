@@ -49,34 +49,34 @@ struct EndScreen: View {
                 
                 Spacer()
                 
-                HStack {
-                    Spacer()
-                    VStack{
-                        // kalo di EndScreen ini buat ngeliat previous match score
-                        Text("🔫:")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
-                        Text("\(recentScore)")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(GameConfigs.neonBlue)
-                    }
-                    Spacer()
-                    
-                    VStack{
-                        // kalo di EndScreen ini buat ngeliat previous match score
-                        Text("🔝:")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
-                        Text("\(highScore)")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(GameConfigs.neonPink)
-                    }
-                    Spacer()
-                }
+//                HStack {
+//                    Spacer()
+//                    VStack{
+//                        // kalo di EndScreen ini buat ngeliat previous match score
+//                        Text("🔫:")
+//                            .font(.title2)
+//                            .fontWeight(.medium)
+//                            .foregroundColor(.black)
+//                        Text("\(recentScore)")
+//                            .font(.title)
+//                            .fontWeight(.bold)
+//                            .foregroundColor(GameConfigs.neonBlue)
+//                    }
+//                    Spacer()
+//                    
+//                    VStack{
+//                        // kalo di EndScreen ini buat ngeliat previous match score
+//                        Text("🔝:")
+//                            .font(.title2)
+//                            .fontWeight(.medium)
+//                            .foregroundColor(.black)
+//                        Text("\(highScore)")
+//                            .font(.title)
+//                            .fontWeight(.bold)
+//                            .foregroundColor(GameConfigs.neonPink)
+//                    }
+//                    Spacer()
+//                }
                 .padding(.top)
                 
                 Spacer()

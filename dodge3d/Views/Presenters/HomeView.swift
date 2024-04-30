@@ -27,16 +27,6 @@ struct HomeView: View {
                         
                     Spacer()
                     
-//                    Button{
-//                            print("test")
-//                    }label: {
-//                        Image("play")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .frame(width: 250)
-//                            .padding(EdgeInsets(top: 70, leading: 0, bottom: 0, trailing: 0))
-//                    }
-                    
                     Button(action: {}) {
                         NavigationLink(destination: Canvas()) {
                             Image("play")
@@ -49,19 +39,19 @@ struct HomeView: View {
 
                     Spacer()
                     
-                    VStack{
-                        // ini buat highest score achieved by the user
-                        // gw mikirnya si pake SwiftData buat storenya
-                        Text("🔝:")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
-                        Text("\(highScore)")
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(GameConfigs.neonPink)
-                    }
-                    .padding(.top)
+//                    VStack{
+//                        // ini buat highest score achieved by the user
+//                        // gw mikirnya si pake SwiftData buat storenya
+//                        Text("🔝:")
+//                            .font(.title2)
+//                            .fontWeight(.medium)
+//                            .foregroundColor(.black)
+//                        Text("\(highScore)")
+//                            .font(.title)
+//                            .fontWeight(.bold)
+//                            .foregroundColor(GameConfigs.neonPink)
+//                    }
+//                    .padding(.top)
                     
                     
                     Spacer()
