@@ -152,6 +152,7 @@ import SwiftUI
             })
         }
         
+        // Deteksi collision camera dengan HomingEngine
         for projectile in homingEngineInstance!.projectiles {
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
             let projectedPositionModifier = projectile.direction * self.projectileSpeed
@@ -178,6 +179,9 @@ import SwiftUI
     override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
         if (self.health > 0){
             self.health -= 1
+            
+            let feedback = UIImpactFeedbackGenerator(style: .medium)
+            feedback.impactOccurred()
         }
     }
     
