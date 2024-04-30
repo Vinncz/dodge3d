@@ -46,14 +46,22 @@ struct Canvas: View {
                 VStack {
                     if ( homingEngineMi.turret.health <= 0 ) {
                         UIButton (
-                            color: .red,
+                            color: .green,
                             flex: true
                         ) {
                             Text("Complete Level")
                         } action: {
                             self.navigateToEndScreen = true
                         }
-                        
+                    } else if (shootingEngine.health <= 0){
+                        UIButton (
+                            color: .red,
+                            flex: true
+                        ) {
+                            Text("Level Failed")
+                        } action: {
+                            self.navigateToEndScreen = true
+                        }
                     } else {
                         HStack{
                             ForEach(0..<10, id: \.self) { index in
