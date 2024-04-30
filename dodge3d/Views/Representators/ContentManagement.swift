@@ -25,7 +25,7 @@ struct ContentManagement: UIViewRepresentable {
         var spawnCountForHomingEngine: Int = 0
         var timer: Timer?
         
-        func smartlyManageHomingEnginesSpawningLogic () {
+        func beginHomingEngineAutoShootAndReloadLogic () {
             timer = Timer.scheduledTimer (
                 withTimeInterval: GameConfigs.spawnDelay, 
                 repeats: true
@@ -42,7 +42,7 @@ struct ContentManagement: UIViewRepresentable {
                         spawnCountForHomingEngine = 0
                         
                         Timer.scheduledTimer(withTimeInterval: GameConfigs.hostileReloadDuration, repeats: false) { _ in
-                            smartlyManageHomingEnginesSpawningLogic()
+                            beginHomingEngineAutoShootAndReloadLogic()
                         }
                     }
                 }
@@ -64,7 +64,7 @@ struct ContentManagement: UIViewRepresentable {
                     let e = engine as! HomingEngine
                     e.setup(manager: view)
                     
-                    smartlyManageHomingEnginesSpawningLogic()
+                    beginHomingEngineAutoShootAndReloadLogic()
                     break
                     
                 case is TargetEngine:
@@ -145,9 +145,33 @@ struct ContentManagement: UIViewRepresentable {
                         break
                         
                     case is HomingEngine:
-                        let e = engine as! HomingEngine
-                        e.spawnObject()
-                    
+                        let e = engine as! HomingEngine                        
+//                        let cameraTransform = e.manager!.cameraTransform.matrix
+//                        
+//                        var translation = matrix_identity_float4x4
+//                        translation.columns.3.z -= 5
+//                        let transform = simd_mul(cameraTransform, translation)
+//                        
+//                        let raycastQuery = ARRaycastQuery (
+//                            origin: SIMD3([
+//                                transform.columns.3.x,
+//                                transform.columns.3.y,
+//                                transform.columns.3.z
+//                            ]),
+//                            direction: SIMD3(0, -1, 0),
+//                            allowing: .estimatedPlane,
+//                            alignment: .horizontal
+//                        )
+//                        
+//                        let results = e.manager!.session.raycast(raycastQuery)
+//                        
+//                        if let firstResult = results.first {
+//                            let groundPosition = SIMD3(firstResult.worldTransform.columns.3.x, firstResult.worldTransform.columns.3.y, firstResult.worldTransform.columns.3.z)
+//                            e.setSpawnPosition(newPosition: groundPosition)
+//                            
+//                        } else {
+//                            e.setSpawnPosition(newPosition: SIMD3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z))
+//                        }
                         break
                         
                     case is LegacyHomingEngine:
@@ -180,7 +204,6 @@ struct ContentManagement: UIViewRepresentable {
                                 
                             case is HomingEngine:
                                 let e = engine as! HomingEngine
-                                e.spawnObject()
                             
                                 break
                                 
@@ -210,6 +233,17 @@ struct ContentManagement: UIViewRepresentable {
     }
     
     func exertConfigs ( _ arView: ARView, _ configs: ARConfiguration ) {
+        switch ( configs ) {
+            case is ARWorldTrackingConfiguration:
+                let c = configs as! ARWorldTrackingConfiguration
+                c.planeDetection = [.horizontal, .vertical]
+                
+                break
+                
+            default:
+                break
+        }
+        
         arView.session.run(configs)
     }
     func attachHoldGestureRecognizer ( _ context: ContentManagement.Context, _ arView: ARView ) {

@@ -5,7 +5,7 @@ import SwiftUI
 @Observable class LegacyHomingEngine: Engine {
     var projectileSpeed = GameConfigs.hostileProjectileSpeed
     
-    var counter: Int = 0
+    var scounter: Int = 0
     var offset : Float
     
     init(_ offset: Float = 0) {
@@ -33,9 +33,11 @@ import SwiftUI
             MovingObject (
                 object: object, 
                 anchor: anchor,
-                direction: trajectory
+                direction: trajectory,
+                id: self.counter
             )
         )
+        counter += 1
         
         despawnObject(targetAnchor: anchor)
     }
@@ -130,7 +132,7 @@ import SwiftUI
     }
     
     override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {
-        counter += 1
+        scounter += 1
     }
     
     override func handleDebug(message: Any) {

@@ -3,7 +3,24 @@ import RealityKit
 import SwiftUI
 
 @Observable class HomingEngine: Engine {
+    var turret: Turret = Turret()
     var spawnPosition: SIMD3<Float> = [0, 0, -5]
+    var turretIsSpawned:Bool = false
+    
+    @Observable class Turret {
+        var maxHealth: Int = GameConfigs.hostileTurretHealth
+        var health   : Int = 0
+        var position : SIMD3<Float> = [0, -2, -6]
+        var entity   : ModelEntity?
+        var anchor   : AnchorEntity
+        var nullifiedProjectile: [MovingObject] = []
+        
+        init () {
+            self.anchor = AnchorEntity(world: [0, -2, -6])
+            self.health = self.maxHealth
+        }
+    }
+    
     var projectileSpeed: Float = GameConfigs.hostileProjectileSpeed
     
     var previousCameraPosition: SIMD3<Float>?
@@ -11,18 +28,37 @@ import SwiftUI
     
     override func setup ( manager: ARView ) {
         self.manager = manager
+    }
+    
+    func spawnTurret ( ) {
+        turret.entity = try! ModelEntity.loadModel(named: "Anti-Tank_Turret")
+        turret.entity!.setScale([0.005, 0.005, 0.005], relativeTo: nil)
         
+        let directionToCamera = normalize(manager!.getCameraPosition() - spawnPosition)
+        let angle = atan2(directionToCamera.x, directionToCamera.z)
+        
+        let forwardDirection = SIMD3(-sin(angle), 0, -cos(angle))
+        
+        turret.position = spawnPosition + forwardDirection * 0.5
+        turret.anchor = AnchorEntity(world: turret.position)
+        turret.anchor.transform.translation.y -= 0.15
+        turret.anchor.transform.rotation = simd_quatf(angle: angle - Float.pi / 2, axis: [0, 1, 0])
+
+        turret.anchor.addChild(turret.entity!)
+        self.manager!.scene.addAnchor(turret.anchor)
+    }
+    
+    func despawnTurret () {
+        turret.anchor.removeChild(turret.entity!)
+        turret.entity = nil
+        self.manager!.scene.removeAnchor(turret.anchor)
+    }    
+    
+    func setSpawnPosition ( ) {
+        if (turretIsSpawned) { despawnTurret() }
+        turretIsSpawned = true
+        self.spawnPosition = manager!.getPositionRelativeToCamera(distanceToCamera: GameConfigs.homingSpawnDistance, angleInDegrees: 0)
         spawnTurret()
-    }
-    
-    func spawnTurret () {
-        
-    }
-    
-    func setSpawnPosition ( newPosition: SIMD3<Float> ) -> HomingEngine {
-        self.spawnPosition = newPosition
-        
-        return self
     } 
     
     override func createObject ( ) -> ModelEntity {
@@ -34,7 +70,9 @@ import SwiftUI
     }
     
     override func spawnObject ( ) {
-        let spawnPosition    = self.spawnPosition
+        guard ( turretIsSpawned ) else { return }
+        
+        let spawnPosition = self.spawnPosition
         
         let anchor = AnchorEntity(world: spawnPosition)
         
@@ -48,9 +86,11 @@ import SwiftUI
             MovingObject (
                 object    : createdObject,
                 anchor    : anchor,
-                direction : trajectory
+                direction : trajectory,
+                id        : self.counter
             )
         )
+        self.counter += 1
         
         despawnObject(targetAnchor: anchor)
     }
@@ -97,6 +137,25 @@ import SwiftUI
     }
     
     override func updateObjectPosition ( frame: ARFrame ) {
+//        func printNodeNames(entity: ModelEntity, prefix: String = "") {
+//            print(prefix + entity.name)
+//            for child in entity.children {
+//                printNodeNames(entity: child as! ModelEntity, prefix: prefix + "  ")
+//            }
+//        }
+//        
+//        if ( turretIsSpawned ) {
+//            let directionToCamera = normalize(manager!.getCameraPosition() - spawnPosition)
+//            let angle = atan2(directionToCamera.x, directionToCamera.z)
+//            
+////            printNodeNames(entity: turret.entity!)
+//            
+//            if let part = turret.entity!.findEntity(named: "Scene/scene/Meshes/Sketchfab_model/Collada_visual_scene_group/Dome_low/defaultMaterial/defaultMaterial") as? ModelEntity {
+//                print("masuk let")
+//                part.transform.rotation = simd_quatf(angle: angle - Float.pi / 2, axis: [0, 1, 0])
+//            }
+//        }
+        
         for projectile in projectiles {
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
             let projectedPositionModifier = projectile.direction * self.projectileSpeed
