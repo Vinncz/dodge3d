@@ -2,7 +2,7 @@ import ARKit
 import RealityKit
 import SwiftUI
 
-@Observable class ShootingEngine: Engine {
+@Observable class ShootingEngine: Engine{
     var projectileSpeed = GameConfigs.friendlyProjectileSpeed
     var projectileRadius = GameConfigs.defaultSphereRadius / 2
     
@@ -16,6 +16,10 @@ import SwiftUI
     var homingEngineInstance: HomingEngine?
     var targetEngineInstance: TargetEngine?
     
+    //variable untuk nunjukin buff message
+    var isBuffMessageShowing : Bool = false
+    var buffMessage : String = ""
+    
     init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
         self.ammoCapacity = ammoCapacity
         self.reloadTime = reloadTimeInSeconds
@@ -26,6 +30,15 @@ import SwiftUI
         DispatchQueue.main.asyncAfter(deadline: .now() + reloadTime) {
             self.isReloading = false
             self.usedAmmo = 0
+        }
+    }
+    
+    //buat ubah nilai isBuffMessageShowing
+    func toggleIsBuffMessageShowing() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            withAnimation {
+                self.isBuffMessageShowing = false
+            }
         }
     }
     
@@ -188,10 +201,12 @@ import SwiftUI
     private func applyBuff(buffCode: Int){
         if (buffCode == 1){
             self.ammoCapacity += 3
+            self.buffMessage = "Ammo Capacity +3"
         }
         else if (buffCode == 2){
             guard ( self.health < 10 ) else { return }
             self.health += 1
+            self.buffMessage = "Health +1"
         }
         else if (buffCode == 3){
             self.reloadTime -= 0.2

@@ -34,91 +34,93 @@ struct Canvas: View {
     
     var body: some View {
         NavigationView {
-            ZStack (alignment: .center) {
-                VStack {
-                    HStack {
-                        Image("turret")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        Text(": \(homingEngineMi.turret.health) / \(homingEngineMi.turret.maxHealth)")
-                    }
-                    .background(Color.clear)
-                    
-                    ContentManagement (
-                        manages: self.engines
-                    )
+            VStack {
                 
-                    VStack {
-                        if ( homingEngineMi.turret.health <= 0 ) {
-                            UIButton (
-                                color: .green,
-                                flex: true
-                            ) {
-                                Image(systemName: "flag.checkered.2.crossed")
-                            } action: {
-                                self.navigateToEndScreen = true
-                            }
-                        } else if (shootingEngine.health <= 0){
-                            UIButton (
-                                color: .red,
-                                flex: true
-                            ) {
-                                Text("👎😝")
-                            } action: {
-                                self.navigateToEndScreen = true
-                            }
-                        } else {
-                            HStack{
-                                ForEach(0..<10, id: \.self) { index in
-                                    Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
-                                        .foregroundColor(.red)
-                                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 7))
-                                }
-                            }
-                            
-                            HStack {
-                                Image("bullet")
-                                    .resizable()
-                                    .frame(width: 30, height: 15)
-                                Text(": \( (shootingEngine.ammoCapacity) - shootingEngine.usedAmmo)/\(shootingEngine.ammoCapacity)")
-                            }
-                            
-                            
-                            UIButton (
-                                color: buttonColor,
-                                flex: true
-                            ) {
-                                if ( shootingEngine.isReloading ) {
-                                    ProgressView().tint(.white)
-                                    Image("bullet")
-                                        .resizable()
-                                        .frame(width: 30, height: 15)
-                                    Text("++")
-                                        .font(.system(size: 24))
-                                        .foregroundStyle(Color.white)
-                                } else {
-                                    Image(systemName: "arrow.circlepath")
-                                }
-                                
-                            } action: {
-                                self.buttonColor = shootingEngine.isReloading ? .red : .blue
-                                guard ( !shootingEngine.isReloading ) else { return }
-                                shootingEngine.reload()
-                            }
-                            
-                            UIButton (
-                                flex: true
-                            ) {
-                                Image(systemName: "play.fill")
-                            } action: {
-                                homingEngineMi.setSpawnPosition()
+                HStack {
+                    Image("turret")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    Text(": \(homingEngineMi.turret.health) / \(homingEngineMi.turret.maxHealth)")
+                }
+                .background(Color.clear)
+                
+                ContentManagement (
+                    manages: self.engines
+                )
+            
+                VStack {
+                    if ( homingEngineMi.turret.health <= 0 ) {
+                        UIButton (
+                            color: .green,
+                            flex: true
+                        ) {
+                            Image(systemName: "flag.checkered.2.crossed")
+                        } action: {
+                            self.navigateToEndScreen = true
+                        }
+                    } else if (shootingEngine.health <= 0){
+                        UIButton (
+                            color: .red,
+                            flex: true
+                        ) {
+                            Text("👎😝")
+                        } action: {
+                            self.navigateToEndScreen = true
+                        }
+                    } else {
+                        BuffMessageView(message: shootingEngine.buffMessage, shootingEngineInstance: shootingEngine)
+                        HStack{
+                            ForEach(0..<10, id: \.self) { index in
+                                Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
+                                    .foregroundColor(.red)
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 7))
                             }
                         }
                         
+                        HStack {
+                            Image("bullet")
+                                .resizable()
+                                .frame(width: 30, height: 15)
+                            Text(": \( (shootingEngine.ammoCapacity) - shootingEngine.usedAmmo)/\(shootingEngine.ammoCapacity)")
+                        }
+                        
+                        
+                        UIButton (
+                            flex: true
+                        ) {
+                            if ( shootingEngine.isReloading ) {
+                                ProgressView().tint(.white)
+                                Text("Reloading")
+                            } else {
+                                Image(systemName: "arrow.circlepath")
+//                                Text("Reload")
+                            }
+                            
+                        } action: {
+                            guard ( !shootingEngine.isReloading ) else { return }
+                            shootingEngine.reload()
+                        }
+                        
+                        UIButton (
+                            flex: true
+                        ) {
+                            Image(systemName: "play.fill")
+                        } action: {
+                            homingEngineMi.setSpawnPosition()
+                        }
                     }
-                    .padding()
-                    .frame(height: 200)
                     .background(Color.clear)
+                    
+                }
+                .padding()
+                .frame(height: 200)
+                .background(Color.clear)
+            }
+            .navigationBarTitle("")
+            .navigationBarHidden(true)
+            .background(
+                NavigationLink(destination: EndScreen(), isActive: $navigateToEndScreen) {
+                    EmptyView()
                 }
                 .navigationBarTitle("")
                 .navigationBarHidden(true)
@@ -130,6 +132,26 @@ struct Canvas: View {
                 Text("+\n\n\n\n\n").font(.system(size: 24))
                     .foregroundStyle(Color.white)
             }
+        }
+    }
+}
+
+struct BuffMessageView: View {
+    var message: String
+    var shootingEngineInstance: ShootingEngine
+    
+    var body: some View {
+        ZStack {
+            Text(message)
+                .font(.title3)
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .transition(.scale)
+        }
+        .onAppear {
+            shootingEngineInstance.toggleIsBuffMessageShowing()
         }
     }
 }
