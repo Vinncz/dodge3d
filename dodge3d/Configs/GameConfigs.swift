@@ -9,7 +9,7 @@ struct GameConfigs {
     static var rng4: SystemRandomNumberGenerator = SystemRandomNumberGenerator()
     
     /** Determines whether your app should print debug information to console */
-    static let debug: Bool = false
+    static let debug: Bool = true
     
     /** Variable which controls how frequent a projectile should be spawned  */
     static let spawnDelay: TimeInterval = 0.3
@@ -19,12 +19,12 @@ struct GameConfigs {
     static let hostileTurretHealth: Int = 16
     static let hostileAmmoCapacity: Int = 16
     static let hostileReloadDuration: TimeInterval = 2
-    static let hostileHitboxRadius: Float = 1
+    static let hostileHitboxRadius: Float = 0.5
     
     /** Variable which controls how fast projectiles should move */
     static let defaultProjectileSpeed: Float = 0.05
     /** Variable which controls how fast projectiles of enemy-allegiance are moving */
-    static let hostileProjectileSpeed: Float  = 0.2
+    static let hostileProjectileSpeed: Float  = 0.1
     /** Variable which controls how fast projectiles of your allegiance are moving */
     static let friendlyProjectileSpeed: Float = 0.05
     
@@ -39,7 +39,7 @@ struct GameConfigs {
     /** Variable which controls how large a default projectile should be. Default projectile use the ModelEntity of Sphere -- thus this variable will be used. */
     static let defaultSphereRadius: Float = 0.05
     
-    static let buffBoxesHitboxRadius: Float = 0.1
+    static let buffBoxesHitboxRadius: Float = 0.25
     
     static let friendlySpehreRadius: Float = 0.025
     static let hostileSphereRadius : Float = 0.75
@@ -50,7 +50,7 @@ struct GameConfigs {
     static let friendlyProjectileSpawnDistance: Float = -0.5
     static let friendlyProjectileScreenOffsetX: Float = 0.2
     static let friendlyProjectileScreenOffsetY: Float = -0.125
-    static let friendlyProjectileScreenOffsetZ: Float = -1
+    static let friendlyProjectileScreenOffsetZ: Float = -0.5
     
     static let defaultCollisionRadius: Float = 0.1
     

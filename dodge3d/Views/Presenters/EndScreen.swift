@@ -40,7 +40,7 @@ struct EndScreen: View {
                     NavigationLink(destination: Canvas()) {
                         Image("replay_button")
                             .resizable()
-                            .scaledToFit()
+                            .scaledToFill()
                             .frame(width: 250)
                             .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                             .clipShape(RoundedRectangle(cornerRadius: 30))

@@ -21,6 +21,8 @@ import SwiftUI
         }
     }
     
+    var projectilesWhoHitCamera: [MovingObject] = []
+    
     var projectileSpeed: Float = GameConfigs.hostileProjectileSpeed
     
     var previousCameraPosition: SIMD3<Float>?
@@ -182,10 +184,15 @@ import SwiftUI
     
     override func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) -> Bool {
         handleDebug(message: "distance: \(distanceFromCamera)")
-        let treshold = GameConfigs.defaultCollisionRadius
+        let treshold = GameConfigs.hostileSphereRadius + 0.2
         
-        if ( distanceFromCamera <= treshold ) { handleDebug(message: "they collided!") }
-        return distanceFromCamera <= GameConfigs.defaultSphereRadius ? true : false
+        if ( distanceFromCamera <= treshold && !projectilesWhoHitCamera.contains(where: { $0.id == object.id })) { 
+            handleDebug(message: "they collided!") 
+            projectilesWhoHitCamera.append(object)
+            return true
+        }
+        
+        return false
     }
     
     override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {

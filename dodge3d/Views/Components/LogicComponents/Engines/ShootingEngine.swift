@@ -54,6 +54,7 @@ import SwiftUI
     
     override func spawnObject ( ) {
         guard !isReloading else { return }
+        guard ( health > 0 ) else { return } 
         guard usedAmmo < ammoCapacity else {
             return
         }
@@ -201,12 +202,12 @@ import SwiftUI
     private func applyBuff(buffCode: Int){
         if (buffCode == 1){
             self.ammoCapacity += 3
-            self.buffMessage = "Ammo Capacity +3"
+            self.buffMessage = "🔫 +3"
         }
         else if (buffCode == 2){
             guard ( self.health < 10 ) else { return }
             self.health += 1
-            self.buffMessage = "Health +1"
+            self.buffMessage = "❤️ +1"
         }
         else if (buffCode == 3){
             self.reloadTime -= 0.2

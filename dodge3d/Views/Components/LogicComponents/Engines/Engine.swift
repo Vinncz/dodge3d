@@ -15,6 +15,7 @@ import Observation
         var direction: SIMD3<Float>
         var gravityEf: Float = GameConfigs.projectileGravityInitialStrength
         var id: Int
+        var nullifiedProjectile: [MovingObject] = []
         
         init ( object: ModelEntity, anchor: AnchorEntity, direction: SIMD3<Float>, id: Int ) {
             self.object = object
