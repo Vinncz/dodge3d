@@ -70,6 +70,7 @@ struct Canvas: View {
                             self.navigateToEndScreen = true
                         }
                     } else {
+                        BuffMessageView(message: shootingEngine.buffMessage, shootingEngineInstance: shootingEngine)
                         HStack{
                             ForEach(0..<10, id: \.self) { index in
                                 Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
@@ -123,6 +124,26 @@ struct Canvas: View {
                     EmptyView()
                 }
             )
+        }
+    }
+}
+
+struct BuffMessageView: View {
+    var message: String
+    var shootingEngineInstance: ShootingEngine
+    
+    var body: some View {
+        ZStack {
+            Text(message)
+                .font(.title3)
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .transition(.scale)
+        }
+        .onAppear {
+            shootingEngineInstance.toggleIsBuffMessageShowing()
         }
     }
 }
