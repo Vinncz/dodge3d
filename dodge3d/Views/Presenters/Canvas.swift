@@ -65,7 +65,7 @@ struct Canvas: View {
                             color: .red,
                             flex: true
                         ) {
-                            Text("Level Failed")
+                            Text("👎😝")
                         } action: {
                             self.navigateToEndScreen = true
                         }
