@@ -6,8 +6,8 @@ struct ContentView : View {
     @StateObject var arViewModel = ARViewModel()
 
     var body: some View {
-        Canvas()
-//        HomeView()
+//        Canvas()
+        HomeView()
 //        ARViewContainer(arViewModel: arViewModel)
 //        ARDodgeballView()
     }

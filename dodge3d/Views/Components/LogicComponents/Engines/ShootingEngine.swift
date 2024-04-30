@@ -14,7 +14,7 @@ import SwiftUI
     var isReloading : Bool = false
     var usedAmmo    : Int = 0
     
-    var homignEngineInstance: HomingEngine?
+    var homingEngineInstance: HomingEngine?
     var targetEngineInstance: TargetEngine?
     
     init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
@@ -73,9 +73,11 @@ import SwiftUI
             MovingObject (
                 object: createdObject,
                 anchor: anchor,
-                direction: trajectory
+                direction: trajectory,
+                id: self.counter
             )
         )
+        self.counter += 1
         
         /* automate object's despawn rule */
         despawnObject(targetAnchor: anchor)
@@ -120,9 +122,19 @@ import SwiftUI
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
+            let distanceFromTurret = length(projectedPosition - self.homingEngineInstance!.turret.position)
+            let thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore = self.homingEngineInstance!.turret.nullifiedProjectile.contains(where: {
+                return $0.id == projectile.id
+            })
+            
+            if ( distanceFromTurret <= 0.4 && thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore == false ) {
+                self.homingEngineInstance?.turret.nullifiedProjectile.append(projectile)
+                self.homingEngineInstance?.turret.health -= 1
+            }
+            
             // Deteksi kollision dengan setiap box dari TargetEngine
             self.targetEngineInstance!.targetObjects.forEach({ target in
-                var anchor = target.boxAnchor
+                let anchor = target.boxAnchor
                 if ( length(anchor.position(relativeTo: nil) - projectedPosition) < 0.6 ) {
                     
                     //apply buff based on buffCode
@@ -161,7 +173,7 @@ import SwiftUI
     override func detectCollisionWithCamera (objectInQuestion object: Engine.MovingObject, distance distanceFromCamera: Float) -> Bool {
             var hit = false
             
-            homignEngineInstance!.projectiles.forEach({ projectile in
+            homingEngineInstance!.projectiles.forEach({ projectile in
                 if ( length(object.anchor.position(relativeTo: nil) - projectile.anchor.position(relativeTo: nil)) < 1 ) {
                     hit = true
                 }

@@ -18,6 +18,11 @@ extension ARView {
     func convertRadiansToDegrees ( _ angleInRadians: Float ) -> Float {
         return angleInRadians * 180 / Float.pi
     }
+    
+    /** Retrieves camera's current x, y, and z position in 3D space. */
+    func getCameraPosition ( ) -> SIMD3<Float> {
+        return self.cameraTransform.translation
+    }
    
     /** Retrieves camera's current x position in 3D space. */
     func getCameraHorizontalPosition ( ) -> Float {

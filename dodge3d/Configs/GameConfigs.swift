@@ -12,10 +12,11 @@ struct GameConfigs {
     static let debug: Bool = false
     
     /** Variable which controls how frequent a projectile should be spawned  */
-    static let spawnDelay: TimeInterval = 0.2
+    static let spawnDelay: TimeInterval = 0.4
     /** Variable which controls how long should it take before a projectile self-despawn  */
     static let despawnDelay: Double = 3
     
+    static let hostileTurretHealth: Int = 63
     static let hostileAmmoCapacity: Int = 30
     static let hostileReloadDuration: TimeInterval = 4
     
@@ -32,7 +33,7 @@ struct GameConfigs {
     static let hostileProjectileInaccuracy : ClosedRange<Float> = 48...72
     
     /** Variable which is used by LegacyHomingEngine. It controls how far away, from camera, should a projectile spawn at */
-    static let homingSpawnDistance: Float = -2.5
+    static let homingSpawnDistance: Float = -5
     
     /** Variable which controls how large a default projectile should be. Default projectile use the ModelEntity of Sphere -- thus this variable will be used. */
     static let defaultSphereRadius: Float = 0.05

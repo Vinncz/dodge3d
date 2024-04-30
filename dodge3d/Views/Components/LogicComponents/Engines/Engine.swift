@@ -4,6 +4,7 @@ import RealityKit
 import Observation
 
 @Observable class Engine {
+    var counter: Int = 1
     var manager: ARView?
     var projectiles: [MovingObject] = []
     var timer: Timer?
@@ -13,11 +14,13 @@ import Observation
         var anchor   : AnchorEntity
         var direction: SIMD3<Float>
         var gravityEf: Float = GameConfigs.projectileGravityInitialStrength
+        var id: Int
         
-        init ( object: ModelEntity, anchor: AnchorEntity, direction: SIMD3<Float> ) {
+        init ( object: ModelEntity, anchor: AnchorEntity, direction: SIMD3<Float>, id: Int ) {
             self.object = object
             self.anchor = anchor
             self.direction = direction
+            self.id = id
         }
     }
     
