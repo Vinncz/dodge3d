@@ -2,7 +2,11 @@ import ARKit
 import RealityKit
 import SwiftUI
 
-@Observable class ShootingEngine: Engine{
+@Observable class ShootingEngine: Engine, Colleague {
+    var signature: String
+    
+    var mediator: Mediator?
+    
     var projectileSpeed = GameConfigs.friendlyProjectileSpeed
     var projectileRadius = GameConfigs.defaultSphereRadius / 2
     
@@ -21,8 +25,14 @@ import SwiftUI
     var buffMessage : String = ""
     
     init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
+        self.signature = "shootingEngine"
         self.ammoCapacity = ammoCapacity
         self.reloadTime = reloadTimeInSeconds
+        super.init()
+    }
+    
+    func receiveMessage (_ message: Any, sendersSignature from: String?) {
+        print(message)
     }
     
     func reload ( ) {

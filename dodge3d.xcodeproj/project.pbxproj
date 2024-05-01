@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2048BADB2BE2435B000D1B8B /* Mediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2048BADA2BE2435B000D1B8B /* Mediator.swift */; };
+		2048BADD2BE258CA000D1B8B /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2048BADC2BE258CA000D1B8B /* Collection.swift */; };
+		2048BAE02BE27971000D1B8B /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2048BADF2BE27971000D1B8B /* Player.swift */; };
 		207C2A132BE0D54A00B7CF69 /* Gift_box.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 207C2A122BE0D54A00B7CF69 /* Gift_box.usdz */; };
 		20B76C482BD8E99C00D2A31E /* asd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C472BD8E99C00D2A31E /* asd.swift */; };
 		20B76C4B2BD96BFD00D2A31E /* GameConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B76C4A2BD96BFD00D2A31E /* GameConfigs.swift */; };
@@ -65,6 +68,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2048BADA2BE2435B000D1B8B /* Mediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mediator.swift; sourceTree = "<group>"; };
+		2048BADC2BE258CA000D1B8B /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		2048BADF2BE27971000D1B8B /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		207C2A122BE0D54A00B7CF69 /* Gift_box.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = Gift_box.usdz; sourceTree = "<group>"; };
 		20B76C472BD8E99C00D2A31E /* asd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = asd.swift; sourceTree = "<group>"; };
 		20B76C4A2BD96BFD00D2A31E /* GameConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConfigs.swift; sourceTree = "<group>"; };
@@ -145,6 +151,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2048BAD72BE24336000D1B8B /* Delegators */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Delegators;
+			sourceTree = "<group>";
+		};
+		2048BAD82BE24341000D1B8B /* Mediators */ = {
+			isa = PBXGroup;
+			children = (
+				2048BADA2BE2435B000D1B8B /* Mediator.swift */,
+			);
+			path = Mediators;
+			sourceTree = "<group>";
+		};
+		2048BAD92BE24348000D1B8B /* DesignPatterns */ = {
+			isa = PBXGroup;
+			children = (
+				2048BAD82BE24341000D1B8B /* Mediators */,
+				2048BAD72BE24336000D1B8B /* Delegators */,
+			);
+			path = DesignPatterns;
+			sourceTree = "<group>";
+		};
+		2048BADE2BE27962000D1B8B /* Players */ = {
+			isa = PBXGroup;
+			children = (
+				2048BADF2BE27971000D1B8B /* Player.swift */,
+			);
+			path = Players;
+			sourceTree = "<group>";
+		};
 		20B76C492BD96BE500D2A31E /* Configs */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				20B76C522BDD115000D2A31E /* ARView.swift */,
+				2048BADC2BE258CA000D1B8B /* Collection.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -219,6 +258,7 @@
 		20DB275F2BDEB33900E1AA03 /* LogicComponents */ = {
 			isa = PBXGroup;
 			children = (
+				2048BADE2BE27962000D1B8B /* Players */,
 				20DB27572BDEB24700E1AA03 /* Engines */,
 			);
 			path = LogicComponents;
@@ -266,6 +306,7 @@
 		20E1C1042BD7BDE200F514E6 /* dodge3d */ = {
 			isa = PBXGroup;
 			children = (
+				2048BAD92BE24348000D1B8B /* DesignPatterns */,
 				20B76C492BD96BE500D2A31E /* Configs */,
 				20B76C512BDD114100D2A31E /* Extensions */,
 				20B76C4C2BD9769600D2A31E /* Views */,
@@ -524,6 +565,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2048BADB2BE2435B000D1B8B /* Mediator.swift in Sources */,
 				20DB27672BDEB46100E1AA03 /* ShootingEngine.swift in Sources */,
 				DC8DD49C2BDA4A0F00097192 /* ContentManagement.swift in Sources */,
 				20E1C1082BD7BDE200F514E6 /* ContentView.swift in Sources */,
@@ -532,12 +574,14 @@
 				BC7C33042BDE9960004F12B4 /* EndScreen.swift in Sources */,
 				20B76C4E2BD9771600D2A31E /* Canvas.swift in Sources */,
 				20DB27652BDEB41300E1AA03 /* Sizes.swift in Sources */,
+				2048BADD2BE258CA000D1B8B /* Collection.swift in Sources */,
 				20DB27622BDEB3AF00E1AA03 /* UIButon.swift in Sources */,
 				20DB275E2BDEB2B400E1AA03 /* TargetEngine.swift in Sources */,
 				20DB27592BDEB25A00E1AA03 /* HomingEngine.swift in Sources */,
 				20B76C532BDD115000D2A31E /* ARView.swift in Sources */,
 				20DB275C2BDEB29000E1AA03 /* LegacyHomingEngine.swift in Sources */,
 				DC8DD4A62BDCF2FA00097192 /* HomeView.swift in Sources */,
+				2048BAE02BE27971000D1B8B /* Player.swift in Sources */,
 				20B76C4B2BD96BFD00D2A31E /* GameConfigs.swift in Sources */,
 				DC8DD49E2BDA4A5800097192 /* Engine.swift in Sources */,
 			);

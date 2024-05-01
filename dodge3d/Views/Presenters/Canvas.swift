@@ -7,14 +7,13 @@ struct Canvas: View {
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     let shootingEngine       = ShootingEngine(ammoCapacity: 6, reloadTimeInSeconds: 4)
-    let homingEngineLe       = HomingEngine()
     let homingEngineMi       = HomingEngine()
-    let homingEngineRi       = HomingEngine()
     let legacyHomingEngine   = LegacyHomingEngine()
-    let legacyHomingEngineLe = LegacyHomingEngine(0.2)
-    let legacyHomingEngineRi = LegacyHomingEngine(-0.2)
     let targetEngine         = TargetEngine()
     var engines: [Engine]    = [ ]
+    
+    let mediator             = Mediator()
+    let player               = Player()
     
     @State var navigateToEndScreen = false
     @State var buttonColor: Color = .blue
@@ -22,14 +21,18 @@ struct Canvas: View {
     init () {
         self.engines = [
             shootingEngine
-//            ,homingEngineLe
             ,homingEngineMi
-//            ,homingEngineRi
             ,targetEngine
-//            ,legacyHomingEngine
         ]
         self.shootingEngine.targetEngineInstance = targetEngine
         self.shootingEngine.homingEngineInstance = homingEngineMi
+        
+        self.shootingEngine.signature = "The Shooting Engine"
+        self.shootingEngine.mediator  = self.mediator
+        self.player.signature         = "The Player"
+        self.player.mediator          = self.mediator
+        self.mediator.add(shootingEngine)
+        self.mediator.add(player)
      }
     
     var body: some View {
@@ -127,6 +130,10 @@ struct Canvas: View {
                         .font(.system(size: 24))
                         .foregroundStyle(Color.white)
             }
+        }.onAppear() {
+            self.mediator.listColleagues()
+            
+            self.mediator.broadcastMessage(message: "JAWAB WOI")
         }
     }
     
