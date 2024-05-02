@@ -3,6 +3,32 @@ import RealityKit
 import SwiftUI
 
 @Observable class TargetEngine: Engine {
+    struct MessageFormat {
+        var contentName: String
+        var messageContent: Any
+    }
+    
+    override init( signature: String = DefaultString.signatureOfTargetEngineForMediator, mediator: Mediator? = nil ) {
+        super.init()
+        
+        self.signature = signature
+        self.mediator = mediator
+    }
+    
+    override func receiveMessage ( _ message: Any, sendersSignature from: String? ) {
+        switch ( from ) {
+            case DefaultString.signatureOfShootingEngineForMediator:
+                print (message)
+                break
+            case DefaultString.signatureOfPlayerForMediator:
+                break
+            case DefaultString.signatureOfTargetEngineForMediator:
+                break
+            default:
+                handleDebug(message: "A message was not captured by \(self.signature)")
+        }
+    }
+    
     var instanceCount = 0
     var targetObjects: [TargetObject] = []
     
@@ -42,7 +68,6 @@ import SwiftUI
     }
     
     func createBoxObject() -> ModelEntity {
-        let boxSize: Float = 0.5
         let object = try! ModelEntity.loadModel(named: "Gift_box")
         object.setScale([0.001, 0.001, 0.001], relativeTo: nil)
         
@@ -58,6 +83,14 @@ import SwiftUI
         let anchorPosition = randomPositionInFrontOfCamera()
         
         if ( self.instanceCount <= GameConfigs.maxTargetCount ) {
+            sendMessage (
+                to: DefaultString.signatureOfShootingEngineForMediator,
+                MessageFormat (
+                    contentName: DefaultString.targetEngineNewBuff, 
+                    messageContent: anchorPosition
+                ),
+                sendersSignature: self.signature
+            )
             let anchor = AnchorEntity(world: anchorPosition)
             anchor.addChild(createBoxObject())
             self.manager!.scene.addAnchor(anchor)

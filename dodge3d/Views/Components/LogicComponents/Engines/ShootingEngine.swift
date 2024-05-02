@@ -2,53 +2,103 @@ import ARKit
 import RealityKit
 import SwiftUI
 
-@Observable class ShootingEngine: Engine, Colleague {
-    var signature: String
+@Observable class ShootingEngine: Engine {
+    struct MessageFormat {
+        var contentName: String
+        var messageContent: Any
+    }
     
-    var mediator: Mediator?
+    enum ShootingEngineState {
+        case normal
+        case outOfAmmo
+        case reloading
+    }
     
-    var projectileSpeed = GameConfigs.friendlyProjectileSpeed
-    var projectileRadius = GameConfigs.defaultSphereRadius / 2
-    
-    var health      : Int = 10
-    var ammoCapacity: Int
-    var reloadTime  : TimeInterval
-    
-    var isReloading : Bool = false
-    var usedAmmo    : Int = 0
-    
-    var homingEngineInstance: HomingEngine?
-    var targetEngineInstance: TargetEngine?
-    
-    //variable untuk nunjukin buff message
-    var isBuffMessageShowing : Bool = false
-    var buffMessage : String = ""
-    
-    init ( ammoCapacity: Int, reloadTimeInSeconds: TimeInterval ) {
-        self.signature = "shootingEngine"
+    init ( ammoCapacity: Int = GameConfigs.playerAmmoCapacity, reloadTimeInSeconds: TimeInterval = GameConfigs.playerReloadDuration, signature: String = DefaultString.signatureOfShootingEngineForMediator, mediator: Mediator? = nil ) {
         self.ammoCapacity = ammoCapacity
         self.reloadTime = reloadTimeInSeconds
+
         super.init()
+
+        self.signature = signature
+        self.mediator  = mediator
     }
     
-    func receiveMessage (_ message: Any, sendersSignature from: String?) {
-        print(message)
-    }
-    
-    func reload ( ) {
-        isReloading = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + reloadTime) {
-            self.isReloading = false
-            self.usedAmmo = 0
+    override func receiveMessage (_ message: Any, sendersSignature from: String?) {
+        switch ( from ) {
+            case DefaultString.signatureOfHomingEngineForMediator:
+                let msg = message as! HomingEngine.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.homingEngineNewTurretPosition:
+                        self.turretPosition = msg.messageContent as! SIMD3<Float>
+                        break
+                        
+                    default:
+                        handleDebug(message: "A message was not captured by \(self.signature)")
+                        break
+                }
+                
+                break
+                
+            case DefaultString.signatureOfPlayerForMediator:
+                break
+                
+            case DefaultString.signatureOfTargetEngineForMediator:
+                let msg = message as! TargetEngine.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.targetEngineNewBuff:
+                        self.buffPositions.append(msg.messageContent as! SIMD3<Float>)
+                        break
+                        
+                    default:
+                        handleDebug(message: "A message was not captured by \(self.signature)")
+                        break
+                }
+                
+                break
+                
+            default:
+                handleDebug(message: "A message was not captured by \(self.signature)")
         }
     }
     
-    //buat ubah nilai isBuffMessageShowing
-    func toggleIsBuffMessageShowing() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            withAnimation {
-                self.isBuffMessageShowing = false
-            }
+    var turretPosition   : SIMD3<Float> = GameConfigs.hostileTurretInitialSpawnPosition
+    var buffPositions    : [SIMD3<Float>] = []
+    
+    var projectileSpeed  : Float  = GameConfigs.friendlyProjectileSpeed
+    var projectileRadius : Float = GameConfigs.friendlySpehreRadius
+    
+    var health           : Int = 10
+    var ammoCapacity     : Int
+    var reloadTime       : TimeInterval
+    
+    var state            : ShootingEngineState = .normal
+    var usedAmmo         : Int = 0
+    
+    func reload ( ) {
+        guard ( self.state == .normal || self.state == .outOfAmmo ) else { return }
+        self.state = .outOfAmmo
+        sendMessage (
+            to: DefaultString.signatureOfCanvasForMediator,
+            MessageFormat (
+                contentName: DefaultString.shootingEnginHasGoneReloading,
+                messageContent: ""
+            ),
+            sendersSignature: self.signature
+        )
+        
+        DispatchQueue.main.asyncAfter ( deadline: .now() + reloadTime ) {
+            self.state = .normal
+            self.usedAmmo = 0
+            
+            self.sendMessage (
+                to: DefaultString.signatureOfCanvasForMediator,
+                MessageFormat (
+                    contentName: DefaultString.shootingEnginHasFinishedReloading,
+                    messageContent: ""
+                ),
+                sendersSignature: self.signature
+            )
         }
     }
     
@@ -56,18 +106,15 @@ import SwiftUI
         let object = ModelEntity(mesh: .generateSphere(radius: self.projectileRadius), materials: [SimpleMaterial(color: .blue, isMetallic: true)])
         object.generateCollisionShapes(recursive: true)
         
-        //adding collision to shooting engine
         object.collision = CollisionComponent(shapes: [.generateSphere(radius: self.projectileRadius)], mode: .default, filter: .default)
       
         return object
     }
     
     override func spawnObject ( ) {
-        guard !isReloading else { return }
-        guard ( health > 0 ) else { return } 
-        guard usedAmmo < ammoCapacity else {
-            return
-        }
+        guard (  self.state == .normal  ) else { return }
+        guard (        health > 0       ) else { return } 
+        guard ( usedAmmo < ammoCapacity ) else { return }
         
         let offsetX = GameConfigs.friendlyProjectileScreenOffsetX
         let offsetY = GameConfigs.friendlyProjectileScreenOffsetY
@@ -84,23 +131,34 @@ import SwiftUI
         
         /* place your object on the allocated coordinate */
         let createdObject = createObject()
-        usedAmmo += 1
         anchor.addChild(createdObject)
+        usedAmmo += 1
+        if ( self.usedAmmo >= self.ammoCapacity ) {
+            self.state = .outOfAmmo
+        }
         
         /* make sure to make your anchor visible */
         self.manager!.scene.addAnchor(anchor)
         
         /* determine where your object will be heading to, and append it to the projectiles array */
         let trajectory = calculateObjectMovingDirection( from: anchor, to: anchor )
-        projectiles.append (
-            MovingObject (
-                object: createdObject,
-                anchor: anchor,
-                direction: trajectory,
-                id: self.counter
-            )
+        let movingObject = MovingObject (
+            object: createdObject,
+            anchor: anchor,
+            direction: trajectory,
+            id: self.counter
         )
+        projectiles.append( movingObject )
         self.counter += 1
+        
+        sendMessage (
+            to: DefaultString.signatureOfCanvasForMediator,
+            MessageFormat (
+                contentName: DefaultString.shootingEngineSpawnNewProjectile,
+                messageContent: movingObject
+            ),
+            sendersSignature: self.signature
+        )
         
         /* automate object's despawn rule */
         despawnObject(targetAnchor: anchor)
@@ -109,13 +167,13 @@ import SwiftUI
     override func calculateObjectMovingDirection ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {    
         let directionVectorToCamerasFront = self.manager!.getCameraFrontDirectionVector()
         
-        /* makes projectile go either left or right */
+        /* inaccuracy makes projectile go either left or right */
         let inaccuracyFactor = Float.random (  
             in: GameConfigs.friendlyProjectileInaccuracy,
             using: &GameConfigs.rng1
         )
         
-        /* makes projectile go either up or down */
+        /* inaccuracy also makes projectile go either up or down */
         let recoil = Float.random (  
             in: -1...1,
             using: &GameConfigs.rng2 
@@ -145,62 +203,66 @@ import SwiftUI
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
-            
+            for buffPosition in buffPositions {
+                if ( length( buffPosition - projectile.anchor.position) <= GameConfigs.buffBoxesHitboxRadius ) {
+                    sendMessage(
+                        to: DefaultString.signatureOfTargetEngineForMediator, 
+                        "kena buff di posisi \(projectile.anchor.position)", 
+                        sendersSignature: self.signature
+                    )
+                }
+            }
             
             // Detect collision with HomingEngine's turret
-            let distanceFromTurret = length(projectedPosition - self.homingEngineInstance!.turret.position)
-            let thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore = self.homingEngineInstance!.turret.nullifiedProjectile.contains(where: {
-                return $0.id == projectile.id
-            })            
-            if ( distanceFromTurret <= GameConfigs.hostileHitboxRadius && thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore == false ) {
-                self.homingEngineInstance?.turret.nullifiedProjectile.append(projectile)
-                if ( self.homingEngineInstance!.turret.health > 0 ) {
-                    self.homingEngineInstance!.turret.health -= 1
-                }
-            }
-            
-            // Deteksi kollision dengan setiap box dari TargetEngine
-            self.targetEngineInstance!.targetObjects.forEach({ target in
-                let anchor = target.boxAnchor
-                if ( length(anchor.position(relativeTo: nil) - projectedPosition) < GameConfigs.buffBoxesHitboxRadius ) {
-                    
-                    //apply buff based on buffCode
-                    applyBuff(buffCode: target.buff)
-                    
-                    self.manager?.scene.removeAnchor(anchor)
-                    
-                    self.targetEngineInstance!.targetObjects.removeAll{
-                        $0.boxAnchor == anchor
-                    }
-                }
-            })
-        }
-        
-        // Deteksi collision camera dengan HomingEngine
-        for projectile in homingEngineInstance!.projectiles {
-            let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
-            let projectedPositionModifier = projectile.direction * self.projectileSpeed
-            
-            let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
-            
-            projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
-
-            let cameraTransform = frame.camera.transform
-            let cameraPosition  = SIMD3<Float> (
-                cameraTransform.columns.3.x,
-                cameraTransform.columns.3.y,
-                cameraTransform.columns.3.z
-            )
-            
-            let distanceFromCamera = length(cameraPosition - projectedPosition)
-            
-            if ( homingEngineInstance!.detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera) ) {
-                handleCollisionWithCamera(objectResponsible: projectile)
-            }
+//            let distanceFromTurret = length(projectedPosition - self.homingEngineInstance!.turret.position)
+//            let thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore = self.homingEngineInstance!.turret.nullifiedProjectile.contains(where: {
+//                return $0.id == projectile.id
+//            })            
+//            if ( distanceFromTurret <= GameConfigs.hostileHitboxRadius && thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore == false ) {
+//                self.homingEngineInstance?.turret.nullifiedProjectile.append(projectile)
+//                if ( self.homingEngineInstance!.turret.health > 0 ) {
+//                    self.homingEngineInstance!.turret.health -= 1
+//                }
+//            }
+//            
+//            // Deteksi kollision dengan setiap box dari TargetEngine
+//            self.targetEngineInstance!.targetObjects.forEach({ target in
+//                let anchor = target.boxAnchor
+//                if ( length(anchor.position(relativeTo: nil) - projectedPosition) < GameConfigs.buffBoxesHitboxRadius ) {
+//                    self.manager?.scene.removeAnchor(anchor)
+//                    
+//                    self.targetEngineInstance!.targetObjects.removeAll{
+//                        $0.boxAnchor == anchor
+//                    }
+//                }
+//            })
+//        }
+//        
+//        // Deteksi collision camera dengan HomingEngine
+//        for projectile in homingEngineInstance!.projectiles {
+//            let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
+//            let projectedPositionModifier = projectile.direction * self.projectileSpeed
+//            
+//            let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
+//            
+//            projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
+//
+//            let cameraTransform = frame.camera.transform
+//            let cameraPosition  = SIMD3<Float> (
+//                cameraTransform.columns.3.x,
+//                cameraTransform.columns.3.y,
+//                cameraTransform.columns.3.z
+//            )
+//            
+//            let distanceFromCamera = length(cameraPosition - projectedPosition)
+//            
+//            if ( homingEngineInstance!.detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera) ) {
+//                handleCollisionWithCamera(objectResponsible: projectile)
+//            }
         }
     }
     
-    override func handleCollisionWithCamera(objectResponsible: Engine.MovingObject) {
+    override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {
         if (self.health > 0){
             self.health -= 1
             
@@ -208,32 +270,5 @@ import SwiftUI
             feedback.impactOccurred()
         }
     }
-    
-    private func applyBuff(buffCode: Int){
-        if (buffCode == 1){
-            self.ammoCapacity += 3
-            self.buffMessage = "🔫 +3"
-        }
-        else if (buffCode == 2){
-            guard ( self.health < 10 ) else { return }
-            self.health += 1
-            self.buffMessage = "❤️ +1"
-        }
-        else if (buffCode == 3){
-            self.reloadTime -= 0.2
-        }
-    }
-    
-//    override func detectCollisionWithCamera (objectInQuestion object: Engine.MovingObject, distance distanceFromCamera: Float) -> Bool {
-//            var hit = false
-//            
-//            homingEngineInstance!.projectiles.forEach({ projectile in
-//                if ( length(object.anchor.position(relativeTo: nil) - projectile.anchor.position(relativeTo: nil)) < 1 ) {
-//                    hit = true
-//                }
-//            })
-//            
-//            return hit
-//        }
 }
 

@@ -19,7 +19,7 @@ protocol Colleague: AnyObject {
     var mediator  : Mediator? { get set }
     
     func setupMediator  ( _ newMediator: Mediator, signature: String )
-    func sendMessage    ( recipient: String, _ message: Any )
+    func sendMessage    ( to recipient: String, _ message: Any, sendersSignature from: String? )
     func receiveMessage ( _ message: Any, sendersSignature from: String? )
 }
 
@@ -29,8 +29,9 @@ extension Colleague {
         self.signature = signature
     }
     
-    func sendMessage ( recipient: String, _ message: Any ) {
-        self.mediator?.forwardMessage(to: recipient, message)
+    func sendMessage ( to recipient: String, _ message: Any, sendersSignature from: String? = nil ) {
+        if ( GameConfigs.debug ) { print("\(recipient) will recieve a message: \(message); from: \(from)") }
+        self.mediator?.forwardMessage(to: recipient, message, sendersSignature: from)
     }
 }
 

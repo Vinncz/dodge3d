@@ -3,20 +3,45 @@ import RealityKit
 import SwiftUI
 
 @Observable class HomingEngine: Engine {
+    struct MessageFormat {
+        var contentName: String
+        var messageContent: Any
+    }
+    
+    override init ( signature: String = DefaultString.signatureOfHomingEngineForMediator, mediator: Mediator? = nil ) {
+        super.init()
+
+        self.signature = signature
+        self.mediator  = mediator
+    }
+    
+    override func receiveMessage ( _ message: Any, sendersSignature from: String? ) {
+        switch ( from ) {
+            case DefaultString.signatureOfShootingEngineForMediator:
+                break
+            case DefaultString.signatureOfPlayerForMediator:
+                break
+            case DefaultString.signatureOfTargetEngineForMediator:
+                break
+            default:
+                handleDebug(message: "A message was not captured by \(self.signature)")
+        }
+    }
+    
     var turret: Turret = Turret()
     var spawnPosition: SIMD3<Float> = [0, 0, -5]
     var turretIsSpawned:Bool = false
     
     @Observable class Turret {
-        var maxHealth: Int = GameConfigs.hostileTurretHealth
-        var health   : Int = 0
-        var position : SIMD3<Float> = [0, -2, -6]
+        var maxHealth: Int          = GameConfigs.hostileTurretHealth
+        var health   : Int          = 0
+        var position : SIMD3<Float> = GameConfigs.hostileTurretInitialSpawnPosition
         var entity   : ModelEntity?
         var anchor   : AnchorEntity
         var nullifiedProjectile: [MovingObject] = []
         
         init () {
-            self.anchor = AnchorEntity(world: [0, -2, -6])
+            self.anchor = AnchorEntity(world: GameConfigs.hostileTurretInitialSpawnPosition)
             self.health = self.maxHealth
         }
     }
@@ -45,6 +70,15 @@ import SwiftUI
         turret.anchor = AnchorEntity(world: turret.position)
         turret.anchor.transform.translation.y -= 0.15
         turret.anchor.transform.rotation = simd_quatf(angle: angle - Float.pi / 2, axis: [0, 1, 0])
+        
+        sendMessage (
+            to: DefaultString.signatureOfShootingEngineForMediator, 
+            MessageFormat (
+                contentName: DefaultString.homingEngineNewTurretPosition, 
+                messageContent: turret.anchor.transform.translation
+            ),
+            sendersSignature: DefaultString.signatureOfHomingEngineForMediator
+        )
 
         turret.anchor.addChild(turret.entity!)
         self.manager!.scene.addAnchor(turret.anchor)

@@ -3,7 +3,19 @@ import ARKit
 import RealityKit
 import Observation
 
-@Observable class Engine {
+@Observable class Engine : Colleague {
+    var signature: String
+    var mediator: Mediator?
+    
+    init ( signature: String = DefaultString.signatureOfBaseEngineForMediator, mediator: Mediator? = nil ) {
+        self.signature = signature
+        self.mediator  = mediator
+    }
+    
+    func receiveMessage ( _ message: Any, sendersSignature from: String? ) {
+        fatalError("unimplemented by subclasses")
+    }
+    
     var counter: Int = 1
     var manager: ARView?
     var projectiles: [MovingObject] = []

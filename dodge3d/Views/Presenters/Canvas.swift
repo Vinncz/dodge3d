@@ -2,18 +2,65 @@ import SwiftUI
 import ARKit
 import RealityKit
 
+@Observable class CanvasRepresentator : Colleague {
+    var signature: String
+    var mediator: Mediator?
+    
+    var shootingEngineIsReloading: Bool = false
+    
+    func receiveMessage (_ message: Any, sendersSignature from: String?) {
+        switch ( from ) {
+            case DefaultString.signatureOfShootingEngineForMediator:
+                let msg = message as! ShootingEngine.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.shootingEngineSpawnNewProjectile:
+//                        self.turretPosition = msg.messageContent as! SIMD3<Float>
+                        break
+                        
+                    case DefaultString.shootingEnginHasGoneReloading:
+                        self.shootingEngineIsReloading = true
+                        break
+                        
+                    case DefaultString.shootingEnginHasFinishedReloading:
+                        self.shootingEngineIsReloading = false
+                        break
+                        
+                    default:
+                        print("A message was not captured by \(self.signature)")
+                        break
+                }
+                
+                break
+            case DefaultString.signatureOfHomingEngineForMediator:
+                break
+            case DefaultString.signatureOfPlayerForMediator:
+                break
+            case DefaultString.signatureOfTargetEngineForMediator:
+                break
+            default:
+                print("A message was not captured by \(self.signature)")
+        }
+    }
+    
+    init ( _ mediator: Mediator ) {
+        self.signature = DefaultString.signatureOfCanvasForMediator
+        self.mediator = mediator
+    }
+}
+
 struct Canvas: View {
     @State var progress = 0.0
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
-    let shootingEngine       = ShootingEngine(ammoCapacity: 6, reloadTimeInSeconds: 4)
+    let shootingEngine       = ShootingEngine()
     let homingEngineMi       = HomingEngine()
     let legacyHomingEngine   = LegacyHomingEngine()
     let targetEngine         = TargetEngine()
     var engines: [Engine]    = [ ]
     
-    let mediator             = Mediator()
-    let player               = Player()
+    let mediator: Mediator
+    @State var canvasRepresentator: CanvasRepresentator
+    let player: Player
     
     @State var navigateToEndScreen = false
     @State var buttonColor: Color = .blue
@@ -24,15 +71,17 @@ struct Canvas: View {
             ,homingEngineMi
             ,targetEngine
         ]
-        self.shootingEngine.targetEngineInstance = targetEngine
-        self.shootingEngine.homingEngineInstance = homingEngineMi
         
-        self.shootingEngine.signature = "The Shooting Engine"
+        self.mediator = Mediator()
+        self.canvasRepresentator = CanvasRepresentator(self.mediator)
+        self.player = Player()
+        
         self.shootingEngine.mediator  = self.mediator
-        self.player.signature         = "The Player"
+        self.homingEngineMi.mediator  = self.mediator
+        self.targetEngine.mediator    = self.mediator
         self.player.mediator          = self.mediator
-        self.mediator.add(shootingEngine)
-        self.mediator.add(player)
+        
+        self.mediator.add([canvasRepresentator, homingEngineMi, shootingEngine, player, targetEngine])
      }
     
     var body: some View {
@@ -72,7 +121,7 @@ struct Canvas: View {
                                 self.navigateToEndScreen = true
                             }
                         } else {
-                            BuffMessageView(message: shootingEngine.buffMessage, shootingEngineInstance: shootingEngine)
+//                            BuffMessageView(message: shootingEngine.buffMessage, shootingEngineInstance: shootingEngine)
                             HStack{
                                 ForEach(0..<10, id: \.self) { index in
                                     Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
@@ -92,16 +141,15 @@ struct Canvas: View {
                             UIButton (
                                 flex: true
                             ) {
-                                if ( shootingEngine.isReloading ) {
+                                if ( canvasRepresentator.shootingEngineIsReloading ) {
                                     ProgressView().tint(.white)
                                     Text("Reloading")
                                 } else {
                                     Image(systemName: "arrow.circlepath")
-    //                                Text("Reload")
                                 }
                                 
                             } action: {
-                                guard ( !shootingEngine.isReloading ) else { return }
+                                guard ( shootingEngine.state != .reloading ) else { return }
                                 shootingEngine.reload()
                             }
                             
@@ -155,7 +203,7 @@ struct BuffMessageView: View {
                 .padding()
         }
         .onAppear {
-            shootingEngineInstance.toggleIsBuffMessageShowing()
+//            shootingEngineInstance.toggleIsBuffMessageShowing()
         }
     }
 }
