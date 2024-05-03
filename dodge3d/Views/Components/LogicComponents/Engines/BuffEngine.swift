@@ -1,14 +1,15 @@
 import ARKit
 import RealityKit
 import SwiftUI
+import Observation
 
-@Observable class TargetEngine: Engine {
+@Observable class BuffEngine: Engine {
     struct MessageFormat {
         var contentName: String
         var messageContent: Any
     }
     
-    override init( signature: String = DefaultString.signatureOfTargetEngineForMediator, mediator: Mediator? = nil ) {
+    override init( signature: String = DefaultString.signatureOfBuffEngineForMediator, mediator: Mediator? = nil ) {
         super.init()
         
         self.signature = signature
@@ -18,11 +19,23 @@ import SwiftUI
     override func receiveMessage ( _ message: Any, sendersSignature from: String? ) {
         switch ( from ) {
             case DefaultString.signatureOfShootingEngineForMediator:
-                print (message)
+                let msg = message as! ShootingEngine.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.shootingEngineHasHitBuffBox:
+                        self.targetObjects.removeAll {
+                            $0.boxAnchor.transform.translation == msg.messageContent as! SIMD3<Float>
+                        }
+                        
+                        break
+                        
+                    default:
+                        break
+                }
+                
                 break
             case DefaultString.signatureOfPlayerForMediator:
                 break
-            case DefaultString.signatureOfTargetEngineForMediator:
+            case DefaultString.signatureOfBuffEngineForMediator:
                 break
             default:
                 handleDebug(message: "A message was not captured by \(self.signature)")
@@ -32,7 +45,7 @@ import SwiftUI
     var instanceCount = 0
     var targetObjects: [TargetObject] = []
     
-    class TargetObject {
+    @Observable class TargetObject {
         var boxAnchor: AnchorEntity
         var buff: Int
         //1 -> buff ammo
@@ -86,7 +99,7 @@ import SwiftUI
             sendMessage (
                 to: DefaultString.signatureOfShootingEngineForMediator,
                 MessageFormat (
-                    contentName: DefaultString.targetEngineNewBuff, 
+                    contentName: DefaultString.buffEngineNewBuff, 
                     messageContent: anchorPosition
                 ),
                 sendersSignature: self.signature

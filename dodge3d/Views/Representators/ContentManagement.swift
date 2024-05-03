@@ -67,8 +67,8 @@ struct ContentManagement: UIViewRepresentable {
                     beginHomingEngineAutoShootAndReloadLogic()
                     break
                     
-                case is TargetEngine:
-                    let e = engine as! TargetEngine
+                case is BuffEngine:
+                    let e = engine as! BuffEngine
                     e.setup(manager: view)
                     
                     break
@@ -122,7 +122,7 @@ struct ContentManagement: UIViewRepresentable {
 //                        what to do when engine is an instace of HomingEngine
                         break
                         
-                    case is TargetEngine:
+                    case is BuffEngine:
 //                        let e = engine as! TargetEngine
 //                        what to do when engine is an instance of TargetEngine
                         break
@@ -180,7 +180,7 @@ struct ContentManagement: UIViewRepresentable {
                     
                         break
                         
-                    case is TargetEngine:
+                    case is BuffEngine:
 //                      let e = engine as! TargetEngine
 
                         break
@@ -213,7 +213,7 @@ struct ContentManagement: UIViewRepresentable {
                             
                                 break
                                 
-                            case is TargetEngine:
+                            case is BuffEngine:
         //                      let e = engine as! TargetEngine
 
                                 break

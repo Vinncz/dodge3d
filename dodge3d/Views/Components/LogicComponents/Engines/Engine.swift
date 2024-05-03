@@ -54,9 +54,9 @@ import Observation
     /** The method which places an object onto canvas, making it visible */
     func spawnObject ( ) {}
     
-    /** The method which makes an object disappear, and then deletes it */
-    func despawnObject ( targetAnchor: AnchorEntity ) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + GameConfigs.despawnDelay) {
+    /** The method which makes an object disappear, and then deletes it. Includes an optional parameter of [delayInSeconds], which uses the default of GameConfigs.despawnDelay */
+    func despawnObject ( targetAnchor: AnchorEntity, delayInSeconds: Double = GameConfigs.despawnDelay ) {
+        DispatchQueue.main.asyncAfter( deadline: .now() + delayInSeconds ) {
             self.manager!.scene.removeAnchor(targetAnchor)
             self.projectiles.removeAll { $0.anchor == targetAnchor }
         }

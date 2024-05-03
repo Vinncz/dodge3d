@@ -13,7 +13,7 @@ class Player : Colleague {
                 break
             case DefaultString.signatureOfPlayerForMediator:
                 break
-            case DefaultString.signatureOfTargetEngineForMediator:
+            case DefaultString.signatureOfBuffEngineForMediator:
                 break
             default:
                 print("A message was not captured by \(self.signature)")

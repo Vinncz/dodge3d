@@ -21,7 +21,7 @@ import SwiftUI
                 break
             case DefaultString.signatureOfPlayerForMediator:
                 break
-            case DefaultString.signatureOfTargetEngineForMediator:
+            case DefaultString.signatureOfBuffEngineForMediator:
                 break
             default:
                 handleDebug(message: "A message was not captured by \(self.signature)")
@@ -38,7 +38,7 @@ import SwiftUI
         var position : SIMD3<Float> = GameConfigs.hostileTurretInitialSpawnPosition
         var entity   : ModelEntity?
         var anchor   : AnchorEntity
-        var nullifiedProjectile: [MovingObject] = []
+//        var nullifiedProjectile: [MovingObject] = []
         
         init () {
             self.anchor = AnchorEntity(world: GameConfigs.hostileTurretInitialSpawnPosition)
@@ -71,6 +71,11 @@ import SwiftUI
         turret.anchor.transform.translation.y -= 0.15
         turret.anchor.transform.rotation = simd_quatf(angle: angle - Float.pi / 2, axis: [0, 1, 0])
         
+        /* 
+         tell the ShootingEngine that a new turret has been spawned at the specified position.
+         failure to do so will result in:
+             - the ShootingEngine will lose track whether any of its projectiles might've hit the turret
+         */
         sendMessage (
             to: DefaultString.signatureOfShootingEngineForMediator, 
             MessageFormat (
@@ -106,7 +111,7 @@ import SwiftUI
     }
     
     override func spawnObject ( ) {
-        guard ( turretIsSpawned ) else { return }
+        guard (  turretIsSpawned  ) else { return }
         guard ( turret.health > 0 ) else { return }
         
         let spawnPosition = self.spawnPosition
@@ -129,7 +134,7 @@ import SwiftUI
         )
         self.counter += 1
         
-        despawnObject(targetAnchor: anchor)
+        despawnObject (targetAnchor: anchor)
     }
     
     override func calculateObjectMovingDirection ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {

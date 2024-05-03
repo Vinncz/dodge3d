@@ -26,11 +26,12 @@ import SwiftUI
     
     override func receiveMessage (_ message: Any, sendersSignature from: String?) {
         switch ( from ) {
+            
             case DefaultString.signatureOfHomingEngineForMediator:
                 let msg = message as! HomingEngine.MessageFormat
                 switch ( msg.contentName ) {
                     case DefaultString.homingEngineNewTurretPosition:
-                        self.turretPosition = msg.messageContent as! SIMD3<Float>
+                        self.turretPosition = (msg.messageContent as! SIMD3<Float>)
                         break
                         
                     default:
@@ -43,10 +44,10 @@ import SwiftUI
             case DefaultString.signatureOfPlayerForMediator:
                 break
                 
-            case DefaultString.signatureOfTargetEngineForMediator:
-                let msg = message as! TargetEngine.MessageFormat
+            case DefaultString.signatureOfBuffEngineForMediator:
+                let msg = message as! BuffEngine.MessageFormat
                 switch ( msg.contentName ) {
-                    case DefaultString.targetEngineNewBuff:
+                    case DefaultString.buffEngineNewBuff:
                         self.buffPositions.append(msg.messageContent as! SIMD3<Float>)
                         break
                         
@@ -62,22 +63,26 @@ import SwiftUI
         }
     }
     
-    var turretPosition   : SIMD3<Float> = GameConfigs.hostileTurretInitialSpawnPosition
+    var turretPosition   : SIMD3<Float>?  = nil
     var buffPositions    : [SIMD3<Float>] = []
     
-    var projectileSpeed  : Float  = GameConfigs.friendlyProjectileSpeed
-    var projectileRadius : Float = GameConfigs.friendlySpehreRadius
+    var projectileSpeed  : Float          = GameConfigs.friendlyProjectileSpeed
+    var projectileRadius : Float          = GameConfigs.friendlySpehreRadius
     
-    var health           : Int = 10
+    var health           : Int            = GameConfigs.playerHealth
+
+    var state            : ShootingEngineState = .normal
+
     var ammoCapacity     : Int
     var reloadTime       : TimeInterval
-    
-    var state            : ShootingEngineState = .normal
     var usedAmmo         : Int = 0
-    
+        
     func reload ( ) {
-        guard ( self.state == .normal || self.state == .outOfAmmo ) else { return }
+        guard ( self.state != .outOfAmmo ) else { return }
+        
         self.state = .outOfAmmo
+        
+        /* tell the canvas that: this engine is currently reloading, so the canvas can handle any visual changes that are needed */
         sendMessage (
             to: DefaultString.signatureOfCanvasForMediator,
             MessageFormat (
@@ -91,6 +96,7 @@ import SwiftUI
             self.state = .normal
             self.usedAmmo = 0
             
+            /* tell the canvas that: this engine is now locked and loaded */
             self.sendMessage (
                 to: DefaultString.signatureOfCanvasForMediator,
                 MessageFormat (
@@ -112,15 +118,15 @@ import SwiftUI
     }
     
     override func spawnObject ( ) {
-        guard (  self.state == .normal  ) else { return }
-        guard (        health > 0       ) else { return } 
-        guard ( usedAmmo < ammoCapacity ) else { return }
+        guard (  self.state == .normal  ) else { return } /* you cannot shoot if you have no ammo, or in the middle of reloading your gun */
+        guard (        health > 0       ) else { return } /* you cannot shoot back if you're dead */
+        guard ( usedAmmo < ammoCapacity ) else { return } /* you cannot shoot if your magazine is empty */
         
         let offsetX = GameConfigs.friendlyProjectileScreenOffsetX
         let offsetY = GameConfigs.friendlyProjectileScreenOffsetY
         let offsetZ = GameConfigs.friendlyProjectileScreenOffsetZ
 
-        let spawnPosition = self.manager!.getPositionRelativeToCamera(
+        let spawnPosition = self.manager!.getPositionRelativeToCamera (
             x: offsetX, 
             y: offsetY, 
             z: offsetZ
@@ -132,15 +138,21 @@ import SwiftUI
         /* place your object on the allocated coordinate */
         let createdObject = createObject()
         anchor.addChild(createdObject)
+        
+        /* ammo logic */
         usedAmmo += 1
-        if ( self.usedAmmo >= self.ammoCapacity ) {
-            self.state = .outOfAmmo
-        }
+        if ( self.usedAmmo >= self.ammoCapacity ) { self.state = .outOfAmmo }
         
         /* make sure to make your anchor visible */
         self.manager!.scene.addAnchor(anchor)
         
-        /* determine where your object will be heading to, and append it to the projectiles array */
+        /* 
+         determine the travelling direction of your object, 
+         and append it to the projectiles array.
+         
+         failure of doing so will result in:
+             - your object being stuck in place
+         */
         let trajectory = calculateObjectMovingDirection( from: anchor, to: anchor )
         let movingObject = MovingObject (
             object: createdObject,
@@ -151,6 +163,7 @@ import SwiftUI
         projectiles.append( movingObject )
         self.counter += 1
         
+        /* tell the canvas that this engine has spawned one more projectile into the screen */
         sendMessage (
             to: DefaultString.signatureOfCanvasForMediator,
             MessageFormat (
@@ -203,41 +216,50 @@ import SwiftUI
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
+            /* check whether any of the ShootingEngine's projectile has hit a BuffBox */
             for buffPosition in buffPositions {
                 if ( length( buffPosition - projectile.anchor.position) <= GameConfigs.buffBoxesHitboxRadius ) {
+                    
+                    /* immidiately despawn the projectile */
+                    despawnObject( targetAnchor: projectile.anchor, delayInSeconds: 0 )
+                    
+                    /* 
+                     tell the BuffEngine that a projectile has hit a specified BuffBox.
+                     
+                     make sure to attach the BuffBox's position, so the engine knows which buff should it give to the player                     
+                     */
                     sendMessage(
-                        to: DefaultString.signatureOfTargetEngineForMediator, 
-                        "kena buff di posisi \(projectile.anchor.position)", 
+                        to: DefaultString.signatureOfBuffEngineForMediator, 
+                        MessageFormat (
+                            contentName: DefaultString.shootingEngineHasHitBuffBox,
+                            messageContent: buffPosition
+                        ),
                         sendersSignature: self.signature
                     )
+                    
                 }
             }
             
-            // Detect collision with HomingEngine's turret
-//            let distanceFromTurret = length(projectedPosition - self.homingEngineInstance!.turret.position)
-//            let thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore = self.homingEngineInstance!.turret.nullifiedProjectile.contains(where: {
-//                return $0.id == projectile.id
-//            })            
-//            if ( distanceFromTurret <= GameConfigs.hostileHitboxRadius && thisProjectileHasHitTheTurretAndThusShouldNotReduceItsHealthAnymore == false ) {
-//                self.homingEngineInstance?.turret.nullifiedProjectile.append(projectile)
-//                if ( self.homingEngineInstance!.turret.health > 0 ) {
-//                    self.homingEngineInstance!.turret.health -= 1
-//                }
-//            }
-//            
-//            // Deteksi kollision dengan setiap box dari TargetEngine
-//            self.targetEngineInstance!.targetObjects.forEach({ target in
-//                let anchor = target.boxAnchor
-//                if ( length(anchor.position(relativeTo: nil) - projectedPosition) < GameConfigs.buffBoxesHitboxRadius ) {
-//                    self.manager?.scene.removeAnchor(anchor)
-//                    
-//                    self.targetEngineInstance!.targetObjects.removeAll{
-//                        $0.boxAnchor == anchor
-//                    }
-//                }
-//            })
-//        }
-//        
+            /* check whether the HomingEngine has placed a turret somewhere on the screen */
+            guard ( self.turretPosition != nil ) else { continue }
+            let computedDistanceFromTurret = length( projectedPosition - turretPosition! )
+            if ( computedDistanceFromTurret <= GameConfigs.hostileTurretHitboxRadius ) {
+                
+                /* tell the HomingEngine that its turret has taken a hit, and there's the need to reduce its healthpoints */
+                sendMessage (
+                    to: DefaultString.signatureOfHomingEngineForMediator,
+                    MessageFormat (
+                        contentName: DefaultString.shootingEngineHasHitHostileTurret,
+                        messageContent: projectile
+                    ),
+                    sendersSignature: self.signature
+                )
+                
+                /* immidiately despawn the object, before it might inflict anymore damage to the turret */
+                despawnObject( targetAnchor: projectile.anchor, delayInSeconds: 0 )
+                
+            }
+            
 //        // Deteksi collision camera dengan HomingEngine
 //        for projectile in homingEngineInstance!.projectiles {
 //            let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)

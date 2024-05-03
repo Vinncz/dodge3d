@@ -35,7 +35,7 @@ import RealityKit
                 break
             case DefaultString.signatureOfPlayerForMediator:
                 break
-            case DefaultString.signatureOfTargetEngineForMediator:
+            case DefaultString.signatureOfBuffEngineForMediator:
                 break
             default:
                 print("A message was not captured by \(self.signature)")
@@ -55,7 +55,7 @@ struct Canvas: View {
     let shootingEngine       = ShootingEngine()
     let homingEngineMi       = HomingEngine()
     let legacyHomingEngine   = LegacyHomingEngine()
-    let targetEngine         = TargetEngine()
+    let targetEngine         = BuffEngine()
     var engines: [Engine]    = [ ]
     
     let mediator: Mediator

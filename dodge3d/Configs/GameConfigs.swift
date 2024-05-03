@@ -29,7 +29,7 @@ struct GameConfigs {
     /** Variable which controls how long does a hostile turret must wait before firing the next salvo of projectiles */
     static let hostileReloadDuration: TimeInterval = 2
     /** Variable which controls how near does a friendly projectile should be, to be treated as a hit -- which will reduce the turret's health */
-    static let hostileHitboxRadius: Float = 0.5
+    static let hostileTurretHitboxRadius: Float = 0.5
     
     /** Variable which controls how fast projectiles should move */
     static let defaultProjectileSpeed: Float = 0.05
@@ -46,7 +46,7 @@ struct GameConfigs {
     /** Variable which is used by LegacyHomingEngine. It controls how far away, from camera, should a projectile spawn at */
     static let homingSpawnDistance: Float = -5
     /** Variable which controls where the turret will spawn initially */
-    static let hostileTurretInitialSpawnPosition: SIMD3<Float> = [0, -2, -6]
+    static let hostileTurretInitialSpawnPosition: SIMD3<Float> = [0, -2, -128]
     
     /** Variable which controls how near does a friendly projectile should be, to be treated as a hit -- which will then give some buffs to the shooter */
     static let buffBoxesHitboxRadius: Float = 1  

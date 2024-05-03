@@ -39,7 +39,7 @@ import SwiftUI
         )
         counter += 1
         
-        despawnObject(targetAnchor: anchor)
+        despawnObject (targetAnchor: anchor)
     }
     
     override func calculateObjectMovingDirection ( from: AnchorEntity, to: AnchorEntity ) -> SIMD3<Float> {
