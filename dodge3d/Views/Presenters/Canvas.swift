@@ -3,9 +3,15 @@ import ARKit
 import RealityKit
 
 @Observable class CanvasRepresentator : Colleague {
+    struct MessageFormat {
+        var contentName: String
+        var messageContent: Any
+    }
+    
     var signature: String
     var mediator: Mediator?
     
+    var playerHealth: Int = 10
     var shootingEngineIsReloading: Bool = false
     
     func receiveMessage (_ message: Any, sendersSignature from: String?) {
@@ -34,8 +40,46 @@ import RealityKit
             case DefaultString.signatureOfHomingEngineForMediator:
                 break
             case DefaultString.signatureOfPlayerForMediator:
+                let msg = message as! Player.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.playerUpdatedHealth:
+                        self.playerHealth = (msg.messageContent as! Int)
+                        break
+                        
+                    default:
+                        break
+                }
+                
                 break
             case DefaultString.signatureOfBuffEngineForMediator:
+                let msg = message as! BuffEngine.MessageFormat
+                
+                switch ( msg.contentName ) {
+                    case DefaultString.buffEngineGrantsNewBuff:
+                        let buffObj = msg.messageContent as! BuffEngine.BuffObject
+                        
+                        switch ( buffObj.buff ) {
+                            case .healthRecovery:
+                                /* tell the Player that they've recieved an extra hp from a buff */
+                                sendMessage(
+                                    to: DefaultString.signatureOfPlayerForMediator, 
+                                    MessageFormat (
+                                        contentName: DefaultString.playerHealthRegenerate,
+                                        messageContent: Int(buffObj.amount * buffObj.multiplier)
+                                    ),
+                                    sendersSignature: self.signature
+                                )
+                                break
+                                
+                            default:
+                                break
+                        }
+                        
+                        break
+                        
+                    default:
+                        break
+                }
                 break
             default:
                 print("A message was not captured by \(self.signature)")
@@ -52,25 +96,22 @@ struct Canvas: View {
     @State var progress = 0.0
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
-    let shootingEngine       = ShootingEngine()
-    let homingEngineMi       = HomingEngine()
-    let legacyHomingEngine   = LegacyHomingEngine()
-    let targetEngine         = BuffEngine()
+    @State var shootingEngine : ShootingEngine
+    @State var homingEngineMi : HomingEngine
+    @State var targetEngine   : BuffEngine
     var engines: [Engine]    = [ ]
     
     let mediator: Mediator
     @State var canvasRepresentator: CanvasRepresentator
-    let player: Player
+    @State var player: Player
     
     @State var navigateToEndScreen = false
     @State var buttonColor: Color = .blue
     
     init () {
-        self.engines = [
-            shootingEngine
-            ,homingEngineMi
-            ,targetEngine
-        ]
+        self.shootingEngine = ShootingEngine()
+        self.homingEngineMi = HomingEngine()
+        self.targetEngine   = BuffEngine()
         
         self.mediator = Mediator()
         self.canvasRepresentator = CanvasRepresentator(self.mediator)
@@ -82,7 +123,17 @@ struct Canvas: View {
         self.player.mediator          = self.mediator
         
         self.mediator.add([canvasRepresentator, homingEngineMi, shootingEngine, player, targetEngine])
-     }
+        
+        initializeEngine()
+    }
+    
+    mutating func initializeEngine () {
+        self.engines = [
+            shootingEngine,
+            homingEngineMi,
+            targetEngine
+        ]
+    }
     
     var body: some View {
         NavigationView {
@@ -102,16 +153,7 @@ struct Canvas: View {
                     )
                 
                     VStack {
-                        if ( homingEngineMi.turret.health <= 0 ) {
-                            UIButton (
-                                color: .green,
-                                flex: true
-                            ) {
-                                Image(systemName: "flag.checkered.2.crossed")
-                            } action: {
-                                self.navigateToEndScreen = true
-                            }
-                        } else if (shootingEngine.health <= 0){
+                        if ( player.health <= 0 ) {
                             UIButton (
                                 color: .red,
                                 flex: true
@@ -120,11 +162,22 @@ struct Canvas: View {
                             } action: {
                                 self.navigateToEndScreen = true
                             }
+                            
+                        } else if ( homingEngineMi.turret.health <= 0 ){
+                            UIButton (
+                                color: .green,
+                                flex: true
+                            ) {
+                                Image(systemName: "flag.checkered.2.crossed")
+                            } action: {
+                                self.navigateToEndScreen = true
+                            }
+                            
                         } else {
 //                            BuffMessageView(message: shootingEngine.buffMessage, shootingEngineInstance: shootingEngine)
                             HStack{
                                 ForEach(0..<10, id: \.self) { index in
-                                    Image(systemName: index < shootingEngine.health ? "heart.fill" : "heart")
+                                    Image(systemName: index < canvasRepresentator.playerHealth ? "heart.fill" : "heart")
                                         .foregroundColor(.red)
                                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 7))
                                 }
@@ -139,6 +192,7 @@ struct Canvas: View {
                             
                             
                             UIButton (
+                                color: buttonColor,
                                 flex: true
                             ) {
                                 if ( canvasRepresentator.shootingEngineIsReloading ) {
@@ -149,8 +203,12 @@ struct Canvas: View {
                                 }
                                 
                             } action: {
-                                guard ( shootingEngine.state != .reloading ) else { return }
+                                buttonColor = .red
                                 shootingEngine.reload()
+                                
+                                DispatchQueue.main.asyncAfter( deadline: .now() + shootingEngine.reloadTime ) {
+                                    buttonColor = .blue
+                                }
                             }
                             
                             UIButton (

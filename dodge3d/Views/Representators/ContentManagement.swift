@@ -108,23 +108,15 @@ struct ContentManagement: UIViewRepresentable {
             self.managedEngine.forEach({ engine in
                 switch engine {
                     case is ShootingEngine:
-//                        let e = engine as! ShootingEngine
-//                        what to do when engine is an instance of ShootingEngine
                         break
                         
                     case is HomingEngine:
-//                        let e = engine as! HomingEngine
-//                        what to do when engine is an instace of HomingEngine
                         break
                         
                     case is LegacyHomingEngine:
-//                        let e = engine as! LegacyHomingEngine
-//                        what to do when engine is an instace of HomingEngine
                         break
                         
                     case is BuffEngine:
-//                        let e = engine as! TargetEngine
-//                        what to do when engine is an instance of TargetEngine
                         break
                         
                     default:
@@ -145,33 +137,6 @@ struct ContentManagement: UIViewRepresentable {
                         break
                         
                     case is HomingEngine:
-                        let e = engine as! HomingEngine                        
-//                        let cameraTransform = e.manager!.cameraTransform.matrix
-//                        
-//                        var translation = matrix_identity_float4x4
-//                        translation.columns.3.z -= 5
-//                        let transform = simd_mul(cameraTransform, translation)
-//                        
-//                        let raycastQuery = ARRaycastQuery (
-//                            origin: SIMD3([
-//                                transform.columns.3.x,
-//                                transform.columns.3.y,
-//                                transform.columns.3.z
-//                            ]),
-//                            direction: SIMD3(0, -1, 0),
-//                            allowing: .estimatedPlane,
-//                            alignment: .horizontal
-//                        )
-//                        
-//                        let results = e.manager!.session.raycast(raycastQuery)
-//                        
-//                        if let firstResult = results.first {
-//                            let groundPosition = SIMD3(firstResult.worldTransform.columns.3.x, firstResult.worldTransform.columns.3.y, firstResult.worldTransform.columns.3.z)
-//                            e.setSpawnPosition(newPosition: groundPosition)
-//                            
-//                        } else {
-//                            e.setSpawnPosition(newPosition: SIMD3(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z))
-//                        }
                         break
                         
                     case is LegacyHomingEngine:
@@ -181,8 +146,6 @@ struct ContentManagement: UIViewRepresentable {
                         break
                         
                     case is BuffEngine:
-//                      let e = engine as! TargetEngine
-
                         break
                         
                     default:
@@ -202,20 +165,10 @@ struct ContentManagement: UIViewRepresentable {
 
                                 break
                                 
-                            case is HomingEngine:
-                                let e = engine as! HomingEngine
-                            
-                                break
-                                
                             case is LegacyHomingEngine:
                                 let e = engine as! LegacyHomingEngine
                                 e.spawnObject()
                             
-                                break
-                                
-                            case is BuffEngine:
-        //                      let e = engine as! TargetEngine
-
                                 break
                                 
                             default:

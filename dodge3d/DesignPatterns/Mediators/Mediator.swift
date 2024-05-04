@@ -30,7 +30,7 @@ extension Colleague {
     }
     
     func sendMessage ( to recipient: String, _ message: Any, sendersSignature from: String? = nil ) {
-        if ( GameConfigs.debug ) { print("\(recipient) will recieve a message: \(message); from: \(from)") }
+        if ( GameConfigs.debug ) { print("\(recipient) will recieve a message: \(message); from: \(String(describing: from))") }
         self.mediator?.forwardMessage(to: recipient, message, sendersSignature: from)
     }
 }

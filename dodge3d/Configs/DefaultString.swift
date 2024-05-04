@@ -17,9 +17,13 @@ struct DefaultString {
     static let shootingEnginHasFinishedReloading   : String = "ShootingEngineHasFinishedReloading"
     
     static let homingEngineNewTurretPosition       : String = "HomingEngineHasMovedItsTurret"
+    static let homingEngineHasHitPlayer            : String = "HomingEngineHasHitPlayer"
     
     static let playerNewPosition                   : String = "PlayerHasMoved"
+    static let playerUpdatedHealth                 : String = "PlayerHasUpdatedHealth"
+    static let playerHealthRegenerate              : String = "PlayerHasRegeneratedTheirHealth"
     
     static let buffEngineNewBuff                   : String = "BuffEngineHasSpawnedNewBuff"
+    static let buffEngineGrantsNewBuff             : String = "BuffEngineHasGrantedBuff"
     
 }

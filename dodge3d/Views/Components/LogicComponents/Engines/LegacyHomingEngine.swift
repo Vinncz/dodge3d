@@ -13,8 +13,6 @@ import SwiftUI
     }
     
     override func spawnObject ( ) {
-        let cameraTransform = self.manager!.cameraTransform
-        
         var anchor = AnchorEntity(world: self.manager!.cameraTransform.translation)
         if let cameraTransform = self.manager!.session.currentFrame?.camera.transform {
             var translation = matrix_identity_float4x4

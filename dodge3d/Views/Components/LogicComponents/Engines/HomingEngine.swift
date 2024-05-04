@@ -18,6 +18,18 @@ import SwiftUI
     override func receiveMessage ( _ message: Any, sendersSignature from: String? ) {
         switch ( from ) {
             case DefaultString.signatureOfShootingEngineForMediator:
+                let msg = message as! ShootingEngine.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.shootingEngineHasHitHostileTurret:
+                        if ( self.turret.health > 0 ) {
+                            self.turret.health -= 1
+                        }
+                        break;
+                        
+                    default:
+                        break
+                } 
+                
                 break
             case DefaultString.signatureOfPlayerForMediator:
                 break
@@ -38,24 +50,19 @@ import SwiftUI
         var position : SIMD3<Float> = GameConfigs.hostileTurretInitialSpawnPosition
         var entity   : ModelEntity?
         var anchor   : AnchorEntity
-//        var nullifiedProjectile: [MovingObject] = []
         
         init () {
             self.anchor = AnchorEntity(world: GameConfigs.hostileTurretInitialSpawnPosition)
             self.health = self.maxHealth
         }
     }
-    
-    var projectilesWhoHitCamera: [MovingObject] = []
-    
+        
     var projectileSpeed: Float = GameConfigs.hostileProjectileSpeed
     
     var previousCameraPosition: SIMD3<Float>?
     var previousTime: Float?
     
-    override func setup ( manager: ARView ) {
-        self.manager = manager
-    }
+    var playerPosition: SIMD3<Float>? = nil
     
     func spawnTurret ( ) {
         turret.entity = try! ModelEntity.loadModel(named: "Anti-Tank_Turret")
@@ -73,14 +80,14 @@ import SwiftUI
         
         /* 
          tell the ShootingEngine that a new turret has been spawned at the specified position.
-         failure to do so will result in:
-             - the ShootingEngine will lose track whether any of its projectiles might've hit the turret
+         failure in doing so will result in:
+             - the ShootingEngine to lose track whether any of its projectiles might've hit the turret
          */
         sendMessage (
             to: DefaultString.signatureOfShootingEngineForMediator, 
             MessageFormat (
                 contentName: DefaultString.homingEngineNewTurretPosition, 
-                messageContent: turret.anchor.transform.translation
+                messageContent: turret.position
             ),
             sendersSignature: DefaultString.signatureOfHomingEngineForMediator
         )
@@ -103,7 +110,7 @@ import SwiftUI
     } 
     
     override func createObject ( ) -> ModelEntity {
-        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.defaultSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
+        let object = ModelEntity(mesh: .generateSphere(radius: GameConfigs.hostileSphereRadius), materials: [SimpleMaterial(color: .red, isMetallic: true)])
         object.physicsBody?.mode = .dynamic
         object.generateCollisionShapes(recursive: true)
         
@@ -179,63 +186,37 @@ import SwiftUI
     }
     
     override func updateObjectPosition ( frame: ARFrame ) {
-//        func printNodeNames(entity: ModelEntity, prefix: String = "") {
-//            print(prefix + entity.name)
-//            for child in entity.children {
-//                printNodeNames(entity: child as! ModelEntity, prefix: prefix + "  ")
-//            }
-//        }
-//        
-//        if ( turretIsSpawned ) {
-//            let directionToCamera = normalize(manager!.getCameraPosition() - spawnPosition)
-//            let angle = atan2(directionToCamera.x, directionToCamera.z)
-//            
-////            printNodeNames(entity: turret.entity!)
-//            
-//            if let part = turret.entity!.findEntity(named: "Scene/scene/Meshes/Sketchfab_model/Collada_visual_scene_group/Dome_low/defaultMaterial/defaultMaterial") as? ModelEntity {
-//                print("masuk let")
-//                part.transform.rotation = simd_quatf(angle: angle - Float.pi / 2, axis: [0, 1, 0])
-//            }
-//        }
+        self.playerPosition = self.manager!.getCameraPosition()
         
         for projectile in projectiles {
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
             let projectedPositionModifier = projectile.direction * self.projectileSpeed
             
             let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
-            
             projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
-
-            let cameraTransform = frame.camera.transform
-            let cameraPosition  = SIMD3<Float> (
-                cameraTransform.columns.3.x,
-                cameraTransform.columns.3.y,
-                cameraTransform.columns.3.z
-            )
             
+            guard ( self.playerPosition != nil ) else { continue }
+
+            let cameraPosition     = self.manager!.getCameraPosition()
             let distanceFromCamera = length(cameraPosition - projectedPosition)
             
-            if ( detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera) ) {
-                handleCollisionWithCamera(objectResponsible: projectile)
+            if ( distanceFromCamera <= GameConfigs.hostileSphereRadius + 0.01 ) {
+                
+                /* immidiately despawn the projectile */
+                despawnObject(targetAnchor: projectile.anchor, delayInSeconds: 0)
+                
+                /* tell the Player that they have taken a hit, and there's the need to reduce their healthpoints */
+                sendMessage(
+                    to: DefaultString.signatureOfPlayerForMediator, 
+                    MessageFormat (
+                        contentName: DefaultString.homingEngineHasHitPlayer,
+                        messageContent: ""
+                    ),
+                    sendersSignature: self.signature
+                )
+                
             }
         }
-    }
-    
-    override func detectCollisionWithCamera ( objectInQuestion object: MovingObject, distance distanceFromCamera: Float ) -> Bool {
-        handleDebug(message: "distance: \(distanceFromCamera)")
-        let treshold = GameConfigs.hostileSphereRadius + 0.2
-        
-        if ( distanceFromCamera <= treshold && !projectilesWhoHitCamera.contains(where: { $0.id == object.id })) { 
-            handleDebug(message: "they collided!") 
-            projectilesWhoHitCamera.append(object)
-            return true
-        }
-        
-        return false
-    }
-    
-    override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {
-//        ShootingEngineInstance!.health -= 1
     }
     
     override func handleDebug(message: Any) {

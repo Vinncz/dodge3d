@@ -9,7 +9,7 @@ struct GameConfigs {
     static var rng4: SystemRandomNumberGenerator = SystemRandomNumberGenerator()
     
     /** Determines whether your app: should print the debug informations to console */
-    static let debug: Bool = false
+    static let debug: Bool = true
     
     /** Variable which controls how frequent does a projectile should be spawned  */
     static let spawnDelay: TimeInterval = 0.3
@@ -49,14 +49,14 @@ struct GameConfigs {
     static let hostileTurretInitialSpawnPosition: SIMD3<Float> = [0, -2, -128]
     
     /** Variable which controls how near does a friendly projectile should be, to be treated as a hit -- which will then give some buffs to the shooter */
-    static let buffBoxesHitboxRadius: Float = 1  
+    static let buffBoxesHitboxRadius: Float = 0.3
     
     /** Variable which controls how large a default projectile should be. Default projectile use the ModelEntity of Sphere -- thus this variable will be used. */
     static let defaultSphereRadius : Float = 0.05
     /** Variable which controls how large does a friendly projectile will be, when spawned */
     static let friendlySpehreRadius: Float = 0.025
     /** Variable which controls how large does a hostile projectile will be, when spawned */
-    static let hostileSphereRadius : Float = 0.75
+    static let hostileSphereRadius : Float = 0.05
     
     /** Variable which controls how strong the initial gravity is */
     static let projectileGravityInitialStrength: Float = 0.0025

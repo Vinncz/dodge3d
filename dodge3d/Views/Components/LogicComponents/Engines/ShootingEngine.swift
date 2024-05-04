@@ -42,6 +42,20 @@ import SwiftUI
                 break
                 
             case DefaultString.signatureOfPlayerForMediator:
+                let msg = message as! Player.MessageFormat
+                switch ( msg.contentName ) {
+                    case DefaultString.playerNewPosition:
+                        self.playerPosition = (msg.messageContent as! SIMD3<Float>)
+                        break
+                        
+                    case DefaultString.playerUpdatedHealth:
+                        self.health = (msg.messageContent as! Int)
+                        break
+                        
+                    default:
+                        handleDebug(message: "A message was not captured by \(self.signature)")
+                        break
+                }
                 break
                 
             case DefaultString.signatureOfBuffEngineForMediator:
@@ -49,6 +63,21 @@ import SwiftUI
                 switch ( msg.contentName ) {
                     case DefaultString.buffEngineNewBuff:
                         self.buffPositions.append(msg.messageContent as! SIMD3<Float>)
+                        break
+                        
+                    case DefaultString.buffEngineGrantsNewBuff:
+                        let buffObj = msg.messageContent as! BuffEngine.BuffObject
+                        switch ( buffObj.buff ) {
+                            case .increasedAmmoCapacity:
+                                self.ammoCapacity += Int(buffObj.amount * buffObj.multiplier)
+                                break
+                            case .reducedReloadTime:
+                                self.reloadTime += Double(buffObj.amount * buffObj.multiplier)
+                                break
+                            default:
+                                break
+                        }
+                        
                         break
                         
                     default:
@@ -64,12 +93,13 @@ import SwiftUI
     }
     
     var turretPosition   : SIMD3<Float>?  = nil
+    var playerPosition   : SIMD3<Float>?  = nil
     var buffPositions    : [SIMD3<Float>] = []
     
     var projectileSpeed  : Float          = GameConfigs.friendlyProjectileSpeed
     var projectileRadius : Float          = GameConfigs.friendlySpehreRadius
     
-    var health           : Int            = GameConfigs.playerHealth
+    var health           : Int            = 10
 
     var state            : ShootingEngineState = .normal
 
@@ -78,9 +108,9 @@ import SwiftUI
     var usedAmmo         : Int = 0
         
     func reload ( ) {
-        guard ( self.state != .outOfAmmo ) else { return }
+        guard ( self.state != .reloading ) else { return }
         
-        self.state = .outOfAmmo
+        self.state = .reloading
         
         /* tell the canvas that: this engine is currently reloading, so the canvas can handle any visual changes that are needed */
         sendMessage (
@@ -205,6 +235,54 @@ import SwiftUI
         return movingDirection
     }
     
+    fileprivate func validateBuffBoxHit ( _ projectile: Engine.MovingObject ) {
+        for buffPosition in buffPositions {
+            if ( length( buffPosition - projectile.anchor.position) <= GameConfigs.buffBoxesHitboxRadius ) {
+                
+                /* immidiately despawn the projectile */
+                despawnObject( targetAnchor: projectile.anchor, delayInSeconds: 0 )
+                
+                /* 
+                 tell the BuffEngine that a projectile has hit a specified BuffBox.
+                 
+                 make sure to attach the BuffBox's position, so the engine knows which buff should it give to the player                     
+                 */
+                sendMessage(
+                    to: DefaultString.signatureOfBuffEngineForMediator, 
+                    MessageFormat (
+                        contentName: DefaultString.shootingEngineHasHitBuffBox,
+                        messageContent: buffPosition
+                    ),
+                    sendersSignature: self.signature
+                )
+                
+                self.buffPositions.removeAll {
+                    $0 == buffPosition
+                }
+                
+            }
+        }
+    }
+    
+    fileprivate func validateTurretHit  ( _ computedDistanceFromTurret: Float, _ projectile: Engine.MovingObject ) {
+        if ( computedDistanceFromTurret <= GameConfigs.hostileTurretHitboxRadius ) {
+            
+            /* tell the HomingEngine that its turret has taken a hit, and there's the need to reduce its healthpoints */
+            sendMessage (
+                to: DefaultString.signatureOfHomingEngineForMediator,
+                MessageFormat (
+                    contentName: DefaultString.shootingEngineHasHitHostileTurret,
+                    messageContent: projectile
+                ),
+                sendersSignature: self.signature
+            )
+            
+            /* immidiately despawn the object, before it might inflict anymore damage to the turret */
+            despawnObject( targetAnchor: projectile.anchor, delayInSeconds: 0 )
+            
+        }
+    }
+    
     override func updateObjectPosition(frame: ARFrame) {
         for projectile in projectiles {
             let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
@@ -217,80 +295,18 @@ import SwiftUI
             projectile.gravityEf += projectile.gravityEf * GameConfigs.projectileGravityParabolicMultiplier
 
             /* check whether any of the ShootingEngine's projectile has hit a BuffBox */
-            for buffPosition in buffPositions {
-                if ( length( buffPosition - projectile.anchor.position) <= GameConfigs.buffBoxesHitboxRadius ) {
-                    
-                    /* immidiately despawn the projectile */
-                    despawnObject( targetAnchor: projectile.anchor, delayInSeconds: 0 )
-                    
-                    /* 
-                     tell the BuffEngine that a projectile has hit a specified BuffBox.
-                     
-                     make sure to attach the BuffBox's position, so the engine knows which buff should it give to the player                     
-                     */
-                    sendMessage(
-                        to: DefaultString.signatureOfBuffEngineForMediator, 
-                        MessageFormat (
-                            contentName: DefaultString.shootingEngineHasHitBuffBox,
-                            messageContent: buffPosition
-                        ),
-                        sendersSignature: self.signature
-                    )
-                    
-                }
-            }
+            validateBuffBoxHit( projectile )
             
-            /* check whether the HomingEngine has placed a turret somewhere on the screen */
+            /* 
+             check whether the HomingEngine has placed a turret somewhere on the screen
+             if there is no turret, simply continue
+             */
             guard ( self.turretPosition != nil ) else { continue }
-            let computedDistanceFromTurret = length( projectedPosition - turretPosition! )
-            if ( computedDistanceFromTurret <= GameConfigs.hostileTurretHitboxRadius ) {
-                
-                /* tell the HomingEngine that its turret has taken a hit, and there's the need to reduce its healthpoints */
-                sendMessage (
-                    to: DefaultString.signatureOfHomingEngineForMediator,
-                    MessageFormat (
-                        contentName: DefaultString.shootingEngineHasHitHostileTurret,
-                        messageContent: projectile
-                    ),
-                    sendersSignature: self.signature
-                )
-                
-                /* immidiately despawn the object, before it might inflict anymore damage to the turret */
-                despawnObject( targetAnchor: projectile.anchor, delayInSeconds: 0 )
-                
-            }
-            
-//        // Deteksi collision camera dengan HomingEngine
-//        for projectile in homingEngineInstance!.projectiles {
-//            let projectileCurrentPosition = projectile.anchor.position(relativeTo: nil)
-//            let projectedPositionModifier = projectile.direction * self.projectileSpeed
-//            
-//            let projectedPosition         = projectileCurrentPosition + projectedPositionModifier
-//            
-//            projectile.anchor.setPosition(projectedPosition, relativeTo: nil)
-//
-//            let cameraTransform = frame.camera.transform
-//            let cameraPosition  = SIMD3<Float> (
-//                cameraTransform.columns.3.x,
-//                cameraTransform.columns.3.y,
-//                cameraTransform.columns.3.z
-//            )
-//            
-//            let distanceFromCamera = length(cameraPosition - projectedPosition)
-//            
-//            if ( homingEngineInstance!.detectCollisionWithCamera( objectInQuestion: projectile, distance: distanceFromCamera) ) {
-//                handleCollisionWithCamera(objectResponsible: projectile)
-//            }
+            /* if so, check whether any of the ShootingEngine's projectile has hit the turret */
+//            let computedDistanceFromTurret = length( projectedPosition - turretPosition! )
+            validateTurretHit( length( projectedPosition - turretPosition! ), projectile )
         }
     }
     
-    override func handleCollisionWithCamera ( objectResponsible: Engine.MovingObject ) {
-        if (self.health > 0){
-            self.health -= 1
-            
-            let feedback = UIImpactFeedbackGenerator(style: .medium)
-            feedback.impactOccurred()
-        }
-    }
 }
 
