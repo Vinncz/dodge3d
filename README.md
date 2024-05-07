@@ -35,6 +35,10 @@ No SceneKit/Scene Builders were used.
 
 Dodge3D modules communicate between themselves using a Mediator, to which you can easily debug; on who sent what message to whom.
 
+## Screenshots
+
+Work in progress.
+
 ## Documentations
 
 Dodge3D codes explain themselves using inline docs and obvious naming; so you can be sure of what a piece of code does.
